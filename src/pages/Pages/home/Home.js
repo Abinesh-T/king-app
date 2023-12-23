@@ -11,9 +11,6 @@ const Home = () => {
     <>
       <AppHeader />
       <Box p={20}>
-        <Text>
-          Home Page
-        </Text>
       </Box>
     </>
   );
