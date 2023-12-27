@@ -28,13 +28,8 @@ const Party = () => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'firstname',
-                header: 'First Name',
-                size: "auto"
-            },
-            {
-                accessorKey: 'lastname',
-                header: 'Last Name',
+                accessorKey: 'name',
+                header: 'Name',
                 size: "auto"
             },
             {
@@ -51,8 +46,7 @@ const Party = () => {
         shouldUnregister: false,
         initialValues: {
             id: "",
-            firstname: "",
-            lastname: "",
+            name: "",
             type: "",
         },
     });
@@ -131,10 +125,7 @@ const Party = () => {
             <Box p={5}>
                 <Grid>
                     <Grid.Col>
-                        <TextInput label="First Name" placeholder='Enter First Name' {...partyForm.getInputProps("firstname")} />
-                    </Grid.Col>
-                    <Grid.Col>
-                        <TextInput label="Last Name" placeholder='Enter Last Name' {...partyForm.getInputProps("lastname")} />
+                        <TextInput label="Name" placeholder='Enter Name' {...partyForm.getInputProps("name")} />
                     </Grid.Col>
                     <Grid.Col>
                         <Select

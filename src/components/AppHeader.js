@@ -2,11 +2,12 @@ import { Box, Button, Drawer, Flex, NavLink, Text, useMantineTheme } from '@mant
 import { useDisclosure } from '@mantine/hooks';
 import { IconActivity, IconChevronRight, IconMenu2, IconUserCircle } from '@tabler/icons';
 import React, { useRef } from 'react'
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 const AppHeader = () => {
 
   const theme = useMantineTheme();
+  const location = useLocation();
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -25,10 +26,11 @@ const AppHeader = () => {
         </Flex>
       </Box>
       <Drawer size={"xs"} opened={opened} onClose={close} title="KING APP">
-        <Button fz={'md'} w={"100%"} variant='subtle' onClick={() => { navigate("/") }}>Home</Button>
-        <Button fz={'md'} w={"100%"} variant='subtle' onClick={() => { navigate("/party") }}>Party</Button>
-        <Button fz={'md'} w={"100%"} variant='subtle' onClick={() => { navigate("/item") }}>Item</Button>
-        <Button fz={'md'} w={"100%"} variant='subtle' onClick={() => { navigate("/order") }}>Order</Button>
+        <Button fz={'md'} w={"100%"} variant={location.pathname === "/" ? 'light' : 'subtle'} onClick={() => { navigate("/") }}>Home</Button>
+        <Button fz={'md'} w={"100%"} variant={location.pathname === "/party" ? 'light' : 'subtle'} onClick={() => { navigate("/party") }}>Party</Button>
+        <Button fz={'md'} w={"100%"} variant={location.pathname === "/item" ? 'light' : 'subtle'} onClick={() => { navigate("/item") }}>Item</Button>
+        <Button fz={'md'} w={"100%"} variant={location.pathname === "/rate" ? 'light' : 'subtle'} onClick={() => { navigate("/rate") }}>Rate</Button>
+        <Button fz={'md'} w={"100%"} variant={location.pathname === "/order" ? 'light' : 'subtle'} onClick={() => { navigate("/order") }}>Order</Button>
       </Drawer>
     </>
   )

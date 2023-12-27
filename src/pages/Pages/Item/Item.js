@@ -37,16 +37,6 @@ const Item = () => {
                 header: 'Item Name',
                 size: "auto"
             },
-            {
-                accessorKey: 'box_rate',
-                header: 'Box Rate',
-                size: "auto"
-            },
-            {
-                accessorKey: 'pcs_rate',
-                header: 'Pcs Rate',
-                size: "auto"
-            }
         ],
         [],
     );
@@ -58,8 +48,6 @@ const Item = () => {
             id: "",
             item_code: "",
             item_name: "",
-            box_rate: "",
-            pcs_rate: "",
         },
     });
 
@@ -138,12 +126,6 @@ const Item = () => {
                     </Grid.Col>
                     <Grid.Col>
                         <TextInput label="Item Name" placeholder='Enter Item Name' {...itemForm.getInputProps("item_name")} />
-                    </Grid.Col>
-                    <Grid.Col>
-                        <NumberInput label="Box Rate" placeholder='Enter Box Rate' {...itemForm.getInputProps("box_rate")} />
-                    </Grid.Col>
-                    <Grid.Col>
-                        <NumberInput label="Pcs Rate" placeholder='Enter Pcs Rate' {...itemForm.getInputProps("pcs_rate")} />
                     </Grid.Col>
                     <Grid.Col>
                         <Flex align={"center"} justify={"right"}>
