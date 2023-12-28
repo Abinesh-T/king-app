@@ -33,10 +33,10 @@ const Rate = () => {
             <Box p={5}>
                 <Grid>
                     <Grid.Col>
-                        <NumberInput label="Box Rate" placeholder='Enter Box Rate' {...rateForm.getInputProps("box_rate")} />
+                        <NumberInput min={0} label="Box Rate" placeholder='Enter Box Rate' {...rateForm.getInputProps("box_rate")} />
                     </Grid.Col>
                     <Grid.Col>
-                        <NumberInput label="Pcs Rate" placeholder='Enter Pcs Rate' {...rateForm.getInputProps("pcs_rate")} />
+                        <NumberInput min={0} label="Pcs Rate" placeholder='Enter Pcs Rate' {...rateForm.getInputProps("pcs_rate")} />
                     </Grid.Col>
                     <Grid.Col>
                         <Flex align={"center"} justify={"right"}>
