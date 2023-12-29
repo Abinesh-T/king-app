@@ -27,24 +27,26 @@ const Rate = () => {
     return (<>
         <AppHeader />
         <Box p={5}>
-            <Flex p={10} gap={10}>
-                <Text fz={"lg"} fw={600}>RATE</Text>
+            <Flex align={"center"} justify={"center"} direction={"column"} >
+                <Box p={10} gap={10}>
+                    <Text fz={"lg"} fw={600} ta={"left"}>RATE</Text>
+                </Box>
+                <Box p={5}>
+                    <Grid maw={500}>
+                        <Grid.Col>
+                            <NumberInput min={0} label="Box Rate" placeholder='Enter Box Rate' {...rateForm.getInputProps("box_rate")} />
+                        </Grid.Col>
+                        <Grid.Col>
+                            <NumberInput min={0} label="Pcs Rate" placeholder='Enter Pcs Rate' {...rateForm.getInputProps("pcs_rate")} />
+                        </Grid.Col>
+                        <Grid.Col>
+                            <Flex align={"center"} justify={"right"}>
+                                <Button onClick={addRate}>{"Save Rate"}</Button>
+                            </Flex>
+                        </Grid.Col>
+                    </Grid>
+                </Box>
             </Flex>
-            <Box p={5}>
-                <Grid>
-                    <Grid.Col>
-                        <NumberInput min={0} label="Box Rate" placeholder='Enter Box Rate' {...rateForm.getInputProps("box_rate")} />
-                    </Grid.Col>
-                    <Grid.Col>
-                        <NumberInput min={0} label="Pcs Rate" placeholder='Enter Pcs Rate' {...rateForm.getInputProps("pcs_rate")} />
-                    </Grid.Col>
-                    <Grid.Col>
-                        <Flex align={"center"} justify={"right"}>
-                            <Button onClick={addRate}>{"Save Rate"}</Button>
-                        </Flex>
-                    </Grid.Col>
-                </Grid>
-            </Box>
         </Box>
     </>
     )

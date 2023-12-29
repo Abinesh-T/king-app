@@ -54,13 +54,12 @@ const Item = () => {
     const addItem = () => {
         itemForm.values.id = nextId;
         setNextId(e => e + 1);
-        console.log(itemForm.values);
         setItemData([...itemData, itemForm.values])
         setItemModal(false)
     }
 
     const deleteItem = async id => {
-        console.log("Deleted", id);
+        //console.log("Deleted", id);
     }
 
     const openDeleteConfirmation = id => {
@@ -71,7 +70,6 @@ const Item = () => {
     };
 
     const editItem = (values) => {
-        console.log(values);
         itemForm.setValues(values);
         setIsEditing(true)
         setItemModal(true);

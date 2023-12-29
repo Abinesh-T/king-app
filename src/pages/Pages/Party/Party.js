@@ -54,13 +54,12 @@ const Party = () => {
     const addParty = () => {
         partyForm.values.id = nextId;
         setNextId(e => e + 1);
-        console.log(partyForm.values);
         setPartyData([...partyData, partyForm.values])
         setPartyModal(false)
     }
 
     const deleteParty = async id => {
-        console.log("Deleted", id);
+        //console.log("Deleted", id);
     }
 
     const openDeleteConfirmation = id => {
@@ -71,7 +70,6 @@ const Party = () => {
     };
 
     const editParty = (values) => {
-        console.log(values);
         partyForm.setValues(values);
         setIsEditing(true)
         setPartyModal(true)
