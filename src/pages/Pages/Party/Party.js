@@ -1,8 +1,9 @@
 import { ActionIcon, Box, Button, Flex, Grid, Modal, Select, Table, Text, TextInput, Tooltip, useMantineTheme } from '@mantine/core'
 import { useForm } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
-import { IconCirclePlus, IconEdit, IconTrash } from '@tabler/icons';
+import { IconCirclePlus, IconEdit, IconPlus, IconTrash } from '@tabler/icons';
 import AppHeader from 'components/AppHeader'
+import FloatingMenu from 'components/FloatingMenu';
 import { MantineReactTable } from 'mantine-react-table';
 import React, { useMemo, useState } from 'react'
 
@@ -76,12 +77,8 @@ const Party = () => {
     }
 
     return (<>
-        <AppHeader />
+        <AppHeader title="PARTY" />
         <Box p={5}>
-            <Flex p={10} gap={10}>
-                <Text fz={"lg"} fw={600}>PARTY</Text>
-                <IconCirclePlus style={{ cursor: "pointer" }} onClick={() => { partyForm.reset(); setIsEditing(false); setPartyModal(true) }} color={theme.colors.brand[8]} />
-            </Flex>
             <MantineReactTable
                 enableRowActions
                 positionActionsColumn="last"
@@ -116,6 +113,16 @@ const Party = () => {
                 enableTopToolbar={false}
             />
         </Box>
+        <FloatingMenu
+            m={5}
+            right
+            size={50}
+            onClick={() => {
+                partyForm.reset(); setIsEditing(false); setPartyModal(true);
+            }}
+        >
+            <IconPlus color="white" />
+        </FloatingMenu>
         <Modal
             opened={partyModal}
             onClose={() => { partyForm.reset(); setPartyModal(false) }}

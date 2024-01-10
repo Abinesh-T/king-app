@@ -46,7 +46,7 @@ root.render(
         globalStyles: theme => ({
           body: {
             color: "#000000",
-            background: "#FAFAFA",
+            background: "#FFFFFF",
           },
         }),
         primaryShade: 8,

@@ -26,32 +26,12 @@ const SetOrder = (props) => {
 
     useEffect(() => {
         if (!orderData.length) {
-            let order = [
-                {
-                    item_code: "item1",
-                },
-                {
-                    item_code: "item2",
-                },
-                {
-                    item_code: "item3",
-                },
-                {
-                    item_code: "item4",
-                },
-                {
-                    item_code: "item5",
-                },
-                {
-                    item_code: "item6",
-                },
-                {
-                    item_code: "item7",
-                },
-                {
-                    item_code: "item8",
-                },
-            ]
+            let order = [];
+            for (let index = 0; index < 50; index++) {
+                order.push({
+                    item_code: "item" + (index + 1),
+                });
+            }
             setOrderData(order);
         }
     }, [])
@@ -61,10 +41,11 @@ const SetOrder = (props) => {
             {
                 accessorKey: 'supplier_party',
                 header: 'Supplier Party',
-                size: "auto",
+                size: 70,
                 Cell: ({ cell }) => {
                     return <div>
                         <Select
+                            // w={"80px"}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -84,7 +65,7 @@ const SetOrder = (props) => {
             {
                 accessorKey: 'item_code',
                 header: 'Item Code',
-                size: "auto",
+                size: 60,
                 Footer: ({ table }) => {
                     return (
                         <>
@@ -96,10 +77,11 @@ const SetOrder = (props) => {
             {
                 accessorKey: 'box',
                 header: 'Box',
-                size: "auto",
+                size: 50,
                 Cell: ((cell) => {
                     return <div>
                         <NumberInput
+                            miw={"58px"}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -131,10 +113,11 @@ const SetOrder = (props) => {
             {
                 accessorKey: 'pcs',
                 header: 'Pcs',
-                size: "auto",
+                size: 50,
                 Cell: ((cell) => {
                     return <div>
                         <NumberInput
+                            miw={"58px"}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -166,7 +149,7 @@ const SetOrder = (props) => {
             {
                 accessorKey: 'amount',
                 header: 'Amount',
-                size: "auto",
+                size: 40,
                 Cell: ((cell) => {
                     let amount = cell.row.original[cell.column.id];
                     cell.row.original[cell.column.id] = isNaN(amount) ? 0 : amount;
@@ -211,42 +194,98 @@ const SetOrder = (props) => {
 
     return (<>
         <Box p={5}>
-            <Flex p={10} pb={0} justify={"space-between"}>
-                <Text fz={"lg"} fw={600}>ADD ORDER</Text>
-
-                <Flex gap={10} justify={"right"} align={"flex-end"}>
-                    <Button size='xs' leftIcon={<IconDeviceFloppy />} onClick={() => {
-                        props.setOrderDataInput([[orderData, toParty, date]]);
-                        props.setIsSetOrder(false);
-                    }}>SAVE</Button>
-                    <Button size='xs' variant="outline" leftIcon={<IconX />} onClick={() => {
-                        props.setOrderDataInput([[]]);
-                        props.setIsSetOrder(false);
-                    }}>CANCEL</Button>
-                    {/* <Button
+            <Grid mb={5}>
+                <Grid.Col span={6}>
+                    <Select
+                        value={toParty}
+                        onChange={setToParty}
+                        label="To Party"
+                        placeholder="Select To Party"
+                        data={[
+                            { value: 'Party 1', label: 'Party 1' },
+                            { value: 'Party 2', label: 'Party 2' },
+                            { value: 'Party 3', label: 'Party 3' },
+                        ]}
+                    />
+                    <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    <Flex h={"100%"} direction={"column"} align={"center"} justify={"space-evenly"}>
+                        <Button w={100} size='xs' leftIcon={<IconDeviceFloppy />} onClick={() => {
+                            props.setOrderDataInput([orderData, footer, toParty, date]);
+                            props.setIsSetOrder(false);
+                        }}>SAVE</Button>
+                        <Button w={100} size='xs' variant="outline" leftIcon={<IconX />} onClick={() => {
+                            props.setOrderDataInput([]);
+                            props.setIsSetOrder(false);
+                        }}>CANCEL</Button>
+                        {/* <Button
                     rightIcon={<IconPrinter />}
                     onClick={() => {
                         handlePrint();
                     }}>Save Order</Button> */}
-                </Flex>
-            </Flex>
-            <Flex p={10} mb={10} gap={10} justify={"space-between"} align={"flex-end"}>
-                <Select
-                    value={toParty}
-                    onChange={setToParty}
-                    label="To Party"
-                    placeholder="Select To Party"
-                    data={[
-                        { value: 'Party 1', label: 'Party 1' },
-                        { value: 'Party 2', label: 'Party 2' },
-                        { value: 'Party 3', label: 'Party 3' },
-                    ]}
-                />
-                <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
-            </Flex>
+                    </Flex>
+                </Grid.Col>
+            </Grid>
             <MantineReactTable
                 columns={columns}
                 data={orderData}
+                enableColumnActions={false}
+                enablePagination={false}
+                enableBottomToolbar={false}
+                enableTopToolbar={false}
+                enableStickyFooter
+                enableStickyHeader
+                mantineTableContainerProps={{ sx: { maxHeight: '65vh' } }}
+                mantineTableBodyProps={{
+                    sx: {
+                        //stripe the rows, make odd rows a darker color
+                        '& td:nth-of-type(odd)': {
+                            padding: 0,
+                            paddingLeft: 1,
+                        }, '& td:nth-of-type(even)': {
+                            padding: 0,
+                            paddingLeft: 1,
+                        },
+                    },
+                }}
+                mantineTableProps={{
+                    sx: {
+                        tableLayout: 'fixed',
+                    },
+                }}
+                mantineTableHeadProps={{
+                    sx: {
+                        //stripe the rows, make odd rows a darker color
+                        '& th:nth-of-type(odd)': {
+                            padding: 0,
+                            paddingLeft: 1,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                        }, '& th:nth-of-type(even)': {
+                            padding: 0,
+                            paddingLeft: 1,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                        },
+                    },
+                }}
+                mantineTableFooterProps={{
+                    sx: {
+                        //stripe the rows, make odd rows a darker color
+                        '& th:nth-of-type(odd)': {
+                            padding: 0,
+                            paddingLeft: 1,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                        }, '& th:nth-of-type(even)': {
+                            padding: 0,
+                            paddingLeft: 1,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                        },
+                    },
+                }}
             // enableRowSelection
             // renderTopToolbarCustomActions={({ table }) => (
             //     <Button

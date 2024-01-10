@@ -1,8 +1,9 @@
 import { ActionIcon, Box, Button, Flex, Grid, Modal, NumberInput, Select, Table, Text, TextInput, Tooltip, useMantineTheme } from '@mantine/core'
 import { useForm } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
-import { IconCirclePlus, IconEdit, IconTrash } from '@tabler/icons';
+import { IconCirclePlus, IconEdit, IconPlus, IconTrash } from '@tabler/icons';
 import AppHeader from 'components/AppHeader'
+import FloatingMenu from 'components/FloatingMenu';
 import { MantineReactTable } from 'mantine-react-table';
 import React, { useMemo, useState } from 'react'
 
@@ -76,12 +77,8 @@ const Item = () => {
     }
 
     return (<>
-        <AppHeader />
+        <AppHeader title="ITEM" />
         <Box p={5}>
-            <Flex p={10} gap={10}>
-                <Text fz={"lg"} fw={600}>ITEM</Text>
-                <IconCirclePlus style={{ cursor: "pointer" }} onClick={() => { itemForm.reset(); setItemModal(true) }} color={theme.colors.brand[8]} />
-            </Flex>
             <MantineReactTable
                 enableRowActions
                 positionActionsColumn="last"
@@ -116,6 +113,16 @@ const Item = () => {
                 enableTopToolbar={false}
             />
         </Box>
+        <FloatingMenu
+            m={5}
+            right
+            size={50}
+            onClick={() => {
+                itemForm.reset(); setItemModal(true);
+            }}
+        >
+            <IconPlus color="white" />
+        </FloatingMenu>
         <Modal opened={itemModal} onClose={() => { itemForm.reset(); setIsEditing(false); setItemModal(false) }} title={isEditing ? "Edit Item" : "Add Item"}>
             <Box p={5}>
                 <Grid>

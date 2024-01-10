@@ -25,12 +25,9 @@ const Rate = () => {
     }
 
     return (<>
-        <AppHeader />
+        <AppHeader title="RATE" />
         <Box p={5}>
             <Flex align={"center"} justify={"center"} direction={"column"} >
-                <Box p={10} gap={10}>
-                    <Text fz={"lg"} fw={600} ta={"left"}>RATE</Text>
-                </Box>
                 <Box p={5}>
                     <Grid maw={500}>
                         <Grid.Col>
