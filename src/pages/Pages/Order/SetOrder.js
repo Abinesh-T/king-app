@@ -25,14 +25,20 @@ const SetOrder = (props) => {
     const [date, setDate] = useState(new Date());
 
     useEffect(() => {
-        if (!orderData.length) {
-            let order = [];
-            for (let index = 0; index < 50; index++) {
-                order.push({
-                    item_code: "item" + (index + 1),
-                });
+        if (props.editingData?.length) {
+            setOrderData(props.editingData[0]);
+            setToParty(props.editingData[2]);
+            setDate(props.editingData[3]);
+        } else {
+            if (!orderData.length) {
+                let order = [];
+                for (let index = 0; index < 50; index++) {
+                    order.push({
+                        item_code: "item" + (index + 1),
+                    });
+                }
+                setOrderData(order);
             }
-            setOrderData(order);
         }
     }, [])
 

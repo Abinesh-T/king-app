@@ -39,6 +39,7 @@ export const PrintModal = React.forwardRef((props, ref) => {
           <Text color="black" fz={"lg"} fw={600}>
             {props.title}
           </Text>
+          {props.children}
         </Flex>
         <table width={"100%"} align="center" style={{ marginTop: "20px" }}>
           <thead
