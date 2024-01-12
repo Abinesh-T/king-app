@@ -21,7 +21,10 @@ const AppHeader = (props) => {
         <Flex align={"center"} justify={"space-between"} h={"100%"}>
           <IconHome color={"white"} onClick={() => { navigate("/") }} />
           <Text color={"white"}>{props.title ? props.title : "KING APP"}</Text>
-          <IconLogout color={"white"} />
+          <IconLogout onClick={() => {
+            localStorage.clear();
+            navigate("/login");
+          }} color={"white"} />
         </Flex>
       </Box>
     </>

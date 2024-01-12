@@ -5,7 +5,10 @@ import { IconCirclePlus, IconEdit, IconPlus, IconTrash } from '@tabler/icons';
 import AppHeader from 'components/AppHeader'
 import FloatingMenu from 'components/FloatingMenu';
 import { MantineReactTable } from 'mantine-react-table';
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { api_add_party, api_all_party, api_delete_party, api_edit_party } from './party.service';
+import { showErrorToast, showSuccessToast } from 'utilities/Toast';
+import { useQuery } from 'react-query';
 
 const confirm_delete_props = {
     title: "Please confirm delete party",
@@ -24,7 +27,13 @@ const Party = () => {
     const [partyModal, setPartyModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [partyData, setPartyData] = useState([]);
-    const [nextId, setNextId] = useState(1);
+
+    const fetch_party = useQuery("fetch_party", api_all_party, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setPartyData(res.data);
+        },
+    });
 
     const columns = useMemo(
         () => [
@@ -34,7 +43,7 @@ const Party = () => {
                 size: "auto"
             },
             {
-                accessorKey: 'type',
+                accessorKey: 'party_type',
                 header: 'Type',
                 size: "auto"
             },
@@ -48,19 +57,46 @@ const Party = () => {
         initialValues: {
             id: "",
             name: "",
-            type: "",
+            party_type: "",
         },
     });
 
-    const addParty = () => {
-        partyForm.values.id = nextId;
-        setNextId(e => e + 1);
-        setPartyData([...partyData, partyForm.values])
-        setPartyModal(false)
+    const addParty = async () => {
+        const payload = {
+            name: partyForm.values.name,
+            party_type: partyForm.values.party_type,
+        }
+
+        await api_add_party(payload).then(
+            res => {
+                if (res.success) {
+                    fetch_party.refetch();
+                    console.log(res);
+                    setPartyModal(false);
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     const deleteParty = async id => {
-        //console.log("Deleted", id);
+        await api_delete_party(id).then(
+            res => {
+                if (res.success) {
+                    fetch_party.refetch();
+                    console.log(res);
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     const openDeleteConfirmation = id => {
@@ -70,10 +106,27 @@ const Party = () => {
         });
     };
 
-    const editParty = (values) => {
-        partyForm.setValues(values);
-        setIsEditing(true)
-        setPartyModal(true)
+    const editParty = async () => {
+        const payload = {
+            id: partyForm.values.id,
+            name: partyForm.values.name,
+            party_type: partyForm.values.party_type,
+        }
+
+        await api_edit_party(payload).then(
+            res => {
+                if (res.success) {
+                    fetch_party.refetch();
+                    console.log(res);
+                    setPartyModal(false);
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     return (<>
@@ -89,7 +142,9 @@ const Party = () => {
                                 sx={theme => ({ color: theme.colors.brand[7] })}
                                 ml={10}
                                 onClick={() => {
-                                    editParty(row.original)
+                                    partyForm.setValues(row.original);
+                                    setIsEditing(true)
+                                    setPartyModal(true)
                                 }}
                             >
                                 <IconEdit style={{ width: 20 }} />
@@ -137,7 +192,7 @@ const Party = () => {
                             label="Select Type"
                             placeholder="Select Type"
                             data={['Sender', 'Supplier', 'Receiver']}
-                            {...partyForm.getInputProps("type")} />
+                            {...partyForm.getInputProps("party_type")} />
                     </Grid.Col>
                     <Grid.Col>
                         <Flex align={"center"} justify={"right"}>

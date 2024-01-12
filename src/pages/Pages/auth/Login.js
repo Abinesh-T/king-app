@@ -3,6 +3,8 @@ import { useForm } from '@mantine/form';
 import AppHeader from 'components/AppHeader';
 import React from 'react'
 import { useNavigate } from 'react-router';
+import { api_login } from './login.service';
+import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -17,23 +19,22 @@ const Login = () => {
 
     const handleLogin = async (values) => {
         const payload = values;
-        localStorage.setItem("access_token", "token");
-        navigate("/");
-        // await api_login(payload).then(
-        //     res => {
-        //         if (res.sucess) {
-        //             console.log(res);
-        //             localStorage.setItem("access_token", res.token);
-        //             localStorage.setItem("username", res.user.username);
-        //             navigate("/user");
-        //             showSuccessToast({ title: "Success", message: res.message });
-        //         } else {
-        //             showErrorToast({ title: "Error", message: res.message });
-        //         }
-        //     }
-        // ).catch(err => {
-        //     console.log(err);
-        // })
+
+        await api_login(payload).then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    localStorage.setItem("access_token", res.token);
+                    localStorage.setItem("username", res.user.username);
+                    navigate("/");
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     return (

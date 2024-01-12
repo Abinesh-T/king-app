@@ -5,17 +5,22 @@ import AppHeader from 'components/AppHeader'
 import { PrintModal } from 'components/PrintModal';
 import { MantineReactTable } from 'mantine-react-table';
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useQuery } from 'react-query';
 import { useReactToPrint } from 'react-to-print';
+import { api_all_item } from '../Item/item.service';
+import { api_all_party } from '../Party/party.service';
+import { getAlteredSelectionParty } from 'services/helperFunctions';
+import { showErrorToast } from 'utilities/Toast';
 
 const SetOrder = (props) => {
     const theme = useMantineTheme();
-    const [head, setHead] = useState(['supplier_party', 'item_code', 'box', 'pcs', 'amount']);
+    const [head, setHead] = useState(['supplier_party', 'code', 'box', 'pcs', 'amount']);
 
     const [orderData, setOrderData] = useState([]);
     const [tableData, setTableData] = useState([]);
     const [tableSelectedData, setTableSelectedData] = useState([]);
     const [isSelected, setIsSelected] = useState(false);
-
+    const [itemData, setItemData] = useState([]);
 
     const [toParty, setToParty] = useState(null);
     const [footer, setFooter] = useState(["", "Total", "", "", ""]);
@@ -24,22 +29,37 @@ const SetOrder = (props) => {
     const [rate, setRate] = useState({ box_rate: 20, pcs_rate: 5 });
     const [date, setDate] = useState(new Date());
 
+    const fetch_item = useQuery("fetch_item", api_all_item, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setItemData(res.data);
+            let order = [];
+            res.data?.map((e, i) => {
+                order.push({
+                    code: e.code,
+                });
+            })
+            setOrderData(order);
+        },
+    });
+
     useEffect(() => {
         if (props.editingData?.length) {
             setOrderData(props.editingData[0]);
             setToParty(props.editingData[2]);
             setDate(props.editingData[3]);
-        } else {
-            if (!orderData.length) {
-                let order = [];
-                for (let index = 0; index < 50; index++) {
-                    order.push({
-                        item_code: "item" + (index + 1),
-                    });
-                }
-                setOrderData(order);
-            }
         }
+        //  else {
+        //     if (!orderData.length) {
+        //         let order = [];
+        //         itemData?.map((e, i) => {
+        //             order.push({
+        //                 code: e.code,
+        //             });
+        //         })
+        //         setOrderData(order);
+        //     }
+        // }
     }, [])
 
     const columns = useMemo(
@@ -51,8 +71,8 @@ const SetOrder = (props) => {
                 Cell: ({ cell }) => {
                     return <div>
                         <Select
-                            withCheckIcon={false}
                             searchable
+                            dropdownPosition="bottom"
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -60,19 +80,15 @@ const SetOrder = (props) => {
                                 setRender(e => !e);
                             }}
                             placeholder="Select Party"
-                            data={[
-                                { value: 'Party 1', label: 'Party 1' },
-                                { value: 'Party 2', label: 'Party 2' },
-                                { value: 'Party 3', label: 'Party 3' },
-                            ]}
+                            data={props.partyData}
                         />
                     </div>;
                 },
             },
             {
-                accessorKey: 'item_code',
+                accessorKey: 'code',
                 header: 'Item Code',
-                size: 60,
+                size: 70,
                 Footer: ({ table }) => {
                     return (
                         <>
@@ -88,7 +104,7 @@ const SetOrder = (props) => {
                 Cell: ((cell) => {
                     return <div>
                         <NumberInput
-                            miw={"58px"}
+                            miw={"40px"}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -125,7 +141,7 @@ const SetOrder = (props) => {
                 Cell: ((cell) => {
                     return <div>
                         <NumberInput
-                            miw={"58px"}
+                            miw={"40px"}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -158,7 +174,7 @@ const SetOrder = (props) => {
             {
                 accessorKey: 'amount',
                 header: 'Amount',
-                size: 40,
+                size: 50,
                 Cell: ((cell) => {
                     let amount = cell.row.original[cell.column.id];
                     cell.row.original[cell.column.id] = isNaN(amount) ? 0 : amount;
@@ -202,7 +218,7 @@ const SetOrder = (props) => {
 
 
     return (<>
-        <Box p={5}>
+        <Box p={5} style={{ overflow: "hidden" }}>
             <Grid mb={5}>
                 <Grid.Col span={6}>
                     <Select
@@ -211,11 +227,7 @@ const SetOrder = (props) => {
                         label="To Party"
                         placeholder="Select To Party"
                         searchable
-                        data={[
-                            { value: 'Party 1', label: 'Party 1' },
-                            { value: 'Party 2', label: 'Party 2' },
-                            { value: 'Party 3', label: 'Party 3' },
-                        ]}
+                        data={props.partyData}
                     />
                     <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
                 </Grid.Col>

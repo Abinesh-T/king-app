@@ -10,6 +10,9 @@ import { openConfirmModal } from '@mantine/modals';
 import { showSuccessToast } from 'utilities/Toast';
 import { useReactToPrint } from 'react-to-print';
 import { PrintModal } from 'components/PrintModal';
+import { useQuery } from 'react-query';
+import { api_all_party } from '../Party/party.service';
+import { getAlteredSelectionParty } from 'services/helperFunctions';
 
 const confirm_delete_props = {
     title: "Please confirm delete order",
@@ -35,6 +38,14 @@ const Order = () => {
     const [orderIdNext, setOrderIdNext] = useState(1);
     const [editingData, setEditingData] = useState([]);
     const [printBodyData, setPrintBodyData] = useState([]);
+    const [partyData, setPartyData] = useState([]);
+
+    const fetch_party = useQuery("fetch_party", api_all_party, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setPartyData(getAlteredSelectionParty(res.data));
+        },
+    });
 
     useEffect(() => {
         if (orderDataInput.length === 4) {
@@ -174,7 +185,7 @@ const Order = () => {
     return (
         <div>
             {isSetOrder ? <>
-                <AppHeader title="ADD ORDER" /><SetOrder setOrderDataInput={setOrderDataInput} editingData={editingData} setIsSetOrder={setIsSetOrder} /></> :
+                <AppHeader title="ADD ORDER" /><SetOrder partyData={partyData} setOrderDataInput={setOrderDataInput} editingData={editingData} setIsSetOrder={setIsSetOrder} /></> :
                 <>
                     <AppHeader title="ORDER" />
                     <Box p={5}>

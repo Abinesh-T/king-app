@@ -6,6 +6,9 @@ import AppHeader from 'components/AppHeader'
 import FloatingMenu from 'components/FloatingMenu';
 import { MantineReactTable } from 'mantine-react-table';
 import React, { useMemo, useState } from 'react'
+import { api_add_item, api_all_item, api_delete_item, api_edit_item } from './item.service';
+import { useQuery } from 'react-query';
+import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 
 const confirm_delete_props = {
     title: "Please confirm delete item",
@@ -26,15 +29,22 @@ const Item = () => {
     const [itemData, setItemData] = useState([]);
     const [nextId, setNextId] = useState(1);
 
+    const fetch_item = useQuery("fetch_item", api_all_item, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setItemData(res.data);
+        },
+    });
+
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'item_code',
+                accessorKey: 'code',
                 header: 'Item Code',
                 size: "auto"
             },
             {
-                accessorKey: 'item_name',
+                accessorKey: 'name',
                 header: 'Item Name',
                 size: "auto"
             },
@@ -47,20 +57,47 @@ const Item = () => {
         shouldUnregister: false,
         initialValues: {
             id: "",
-            item_code: "",
-            item_name: "",
+            code: "",
+            name: "",
         },
     });
 
-    const addItem = () => {
-        itemForm.values.id = nextId;
-        setNextId(e => e + 1);
-        setItemData([...itemData, itemForm.values])
-        setItemModal(false)
+    const addItem = async () => {
+        const payload = {
+            name: itemForm.values.name,
+            code: itemForm.values.code,
+        }
+
+        await api_add_item(payload).then(
+            res => {
+                if (res.success) {
+                    fetch_item.refetch();
+                    console.log(res);
+                    setItemModal(false);
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     const deleteItem = async id => {
-        //console.log("Deleted", id);
+        await api_delete_item(id).then(
+            res => {
+                if (res.success) {
+                    fetch_item.refetch();
+                    console.log(res);
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     const openDeleteConfirmation = id => {
@@ -70,10 +107,27 @@ const Item = () => {
         });
     };
 
-    const editItem = (values) => {
-        itemForm.setValues(values);
-        setIsEditing(true)
-        setItemModal(true);
+    const editItem = async () => {
+        const payload = {
+            id: itemForm.values.id,
+            name: itemForm.values.name,
+            code: itemForm.values.code,
+        }
+
+        await api_edit_item(payload).then(
+            res => {
+                if (res.success) {
+                    fetch_item.refetch();
+                    console.log(res);
+                    setItemModal(false);
+                    showSuccessToast({ title: "Success", message: res.message });
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     return (<>
@@ -84,18 +138,20 @@ const Item = () => {
                 positionActionsColumn="last"
                 renderRowActions={({ row }) => (
                     <Flex>
-                        <Tooltip label="Edit Party">
+                        <Tooltip label="Edit Item">
                             <ActionIcon
                                 sx={theme => ({ color: theme.colors.brand[7] })}
                                 ml={10}
                                 onClick={() => {
-                                    editItem(row.original);
+                                    itemForm.setValues(row.original);
+                                    setIsEditing(true)
+                                    setItemModal(true);
                                 }}
                             >
                                 <IconEdit style={{ width: 20 }} />
                             </ActionIcon>
                         </Tooltip>
-                        <Tooltip label="Delete Party">
+                        <Tooltip label="Delete Item">
                             <ActionIcon
                                 sx={theme => ({ color: theme.colors.red[6] })}
                                 ml={10}
@@ -127,10 +183,10 @@ const Item = () => {
             <Box p={5}>
                 <Grid>
                     <Grid.Col>
-                        <TextInput label="Item Code" placeholder='Enter Item Code' {...itemForm.getInputProps("item_code")} />
+                        <TextInput label="Item Code" placeholder='Enter Item Code' {...itemForm.getInputProps("code")} />
                     </Grid.Col>
                     <Grid.Col>
-                        <TextInput label="Item Name" placeholder='Enter Item Name' {...itemForm.getInputProps("item_name")} />
+                        <TextInput label="Item Name" placeholder='Enter Item Name' {...itemForm.getInputProps("name")} />
                     </Grid.Col>
                     <Grid.Col>
                         <Flex align={"center"} justify={"right"}>
