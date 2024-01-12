@@ -51,7 +51,8 @@ const SetOrder = (props) => {
                 Cell: ({ cell }) => {
                     return <div>
                         <Select
-                            // w={"80px"}
+                            withCheckIcon={false}
+                            searchable
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -96,6 +97,7 @@ const SetOrder = (props) => {
                                 setRender(e => !e);
                             }}
                             min={0}
+                            hideControls
                             placeholder='Box' />
                     </div>;
                 }),
@@ -131,6 +133,7 @@ const SetOrder = (props) => {
                                 cell.row.original["amount"] = (rate.box_rate * (isNaN(cell.row.original["box"]) ? 0 : cell.row.original["box"])) + (rate.pcs_rate * e);
                                 setRender(e => !e);
                             }}
+                            hideControls
                             min={0}
                             placeholder='Pcs' />
                     </div>;
@@ -207,6 +210,7 @@ const SetOrder = (props) => {
                         onChange={setToParty}
                         label="To Party"
                         placeholder="Select To Party"
+                        searchable
                         data={[
                             { value: 'Party 1', label: 'Party 1' },
                             { value: 'Party 2', label: 'Party 2' },
