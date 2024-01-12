@@ -29,6 +29,8 @@ const Order = () => {
     const [isSetOrder, setIsSetOrder] = useState(false);
     const [orderDataInput, setOrderDataInput] = useState([]);
     const [tableData, setTableData] = useState([]);
+    const [menuData, setMenuData] = useState([]);
+    const [footData, setFootData] = useState([]);
     const [date, setDate] = useState(new Date());
     const [orderIdNext, setOrderIdNext] = useState(1);
     const [editingData, setEditingData] = useState([]);
@@ -107,9 +109,9 @@ const Order = () => {
                 header: 'Print',
                 size: "auto",
                 Cell: ({ cell }) => {
-                    return <Box p={2} style={{ cursor: "pointer" }} onClick={() => {
+                    return <Box style={{ cursor: "pointer" }} onClick={() => {
                         let data = cell.row.original?.order?.length ? cell.row.original?.order[0]?.filter((e, i) => e.amount > 0) : [];
-                        console.log(data);
+                        // console.log(cell.row.original);
                         if (data.length) {
                             let printData = [];
                             data.map((e, i) => {
@@ -120,10 +122,26 @@ const Order = () => {
                                 template[5] = e.amount;
                                 printData.push(template);
                             })
+                            let foot = [];
+                            if (cell.row.original?.order?.length) {
+                                foot = [...cell.row.original?.order[1]];
+                                foot.splice(0, 1);
+                                const amt = foot[3];
+                                foot.splice(3, 1);
+                                foot.push(0);
+                                foot.push(0);
+                                foot.push(amt);
+                                printData.push(foot);
+                            }
+
                             setPrintBodyData(printData);
+                            setMenuData([["To :", cell.row.original?.to_party, "", "No :", cell.row.original?.id],
+                            ["Address :", "", "", "Date :", cell.row.original?.date],
+                            ["GST No :", ""],
+                            ]);
                         }
                     }}>
-                        <IconPrinter />
+                        <IconPrinter color={theme.colors.brand[7]} />
                     </Box>;
                 },
             },
@@ -146,7 +164,12 @@ const Order = () => {
         showSuccessToast({ title: "Deleted Order", message: "Deleted order successfully" });
     };
 
-    const children = <></>;
+    const children = <Box w={"100%"} p={0} m={0}>
+        <PrintModal
+            head={[]}
+            body={menuData}
+        />
+    </Box>;
 
     return (
         <div>
@@ -163,6 +186,7 @@ const Order = () => {
                             data={tableData}
                             positionActionsColumn='last'
                             enableRowActions
+                            enableColumnActions={false}
                             renderRowActions={({ row }) => (
                                 <Flex>
                                     <Tooltip label="Edit Order">

@@ -33,15 +33,15 @@ export const PrintModal = React.forwardRef((props, ref) => {
   ));
 
   return (
-    <div ref={ref}>
+    <div ref={ref} style={{ width: "100%" }}>
       <Container fluid mt={10}>
-        <Flex align={"center"} justify={"center"} direction={"column"} gap={"lg"}>
+        {props.title ? <Flex align={"center"} justify={"center"} direction={"column"} gap={"lg"}>
           <Text color="black" fz={"lg"} fw={600}>
             {props.title}
           </Text>
-          {props.children}
-        </Flex>
-        <table width={"100%"} align="center" style={{ marginTop: "20px" }}>
+        </Flex> : <></>}
+        {props.children}
+        <table width={"100%"} align="center" style={{ marginTop: "20px", border: "1px solid black" }}>
           <thead
             style={{
               background: "white",
