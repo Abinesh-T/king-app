@@ -33,7 +33,7 @@ export const api_all_order = async (date) => {
         });
 };
 
-export const api_all_order_by_id = async (id) => {
+export const api_order_by_id = async (id) => {
     return await httpClient
         .get(`order/?order_id=${id}`)
         .then((res) => {

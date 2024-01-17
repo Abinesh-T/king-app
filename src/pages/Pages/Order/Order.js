@@ -1,18 +1,19 @@
-import { ActionIcon, Box, Flex, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Box, Button, Flex, Text, Tooltip, useMantineTheme } from '@mantine/core';
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import SetOrder from './SetOrder';
 import AppHeader from 'components/AppHeader';
-import { IconCirclePlus, IconEdit, IconPlus, IconPrinter, IconTrash } from '@tabler/icons';
+import { IconArrowLeft, IconArrowRight, IconCirclePlus, IconEdit, IconPlus, IconPrinter, IconTrash } from '@tabler/icons';
 import { DatePickerInput } from '@mantine/dates';
 import { MantineReactTable } from 'mantine-react-table';
 import FloatingMenu from 'components/FloatingMenu';
 import { openConfirmModal } from '@mantine/modals';
-import { showSuccessToast } from 'utilities/Toast';
+import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 import { useReactToPrint } from 'react-to-print';
 import { PrintModal } from 'components/PrintModal';
 import { useQuery } from 'react-query';
 import { api_all_party } from '../Party/party.service';
 import { getAlteredSelectionParty } from 'services/helperFunctions';
+import { api_all_order, api_delete_order, api_order_by_id } from './order.service';
 
 const confirm_delete_props = {
     title: "Please confirm delete order",
@@ -30,13 +31,10 @@ const confirm_delete_props = {
 const Order = () => {
     const theme = useMantineTheme();
     const [isSetOrder, setIsSetOrder] = useState(false);
-    const [orderDataInput, setOrderDataInput] = useState([]);
     const [tableData, setTableData] = useState([]);
     const [menuData, setMenuData] = useState([]);
-    const [footData, setFootData] = useState([]);
     const [date, setDate] = useState(new Date());
-    const [orderIdNext, setOrderIdNext] = useState(1);
-    const [editingData, setEditingData] = useState([]);
+    const [editingData, setEditingData] = useState(null);
     const [printBodyData, setPrintBodyData] = useState([]);
     const [partyData, setPartyData] = useState([]);
 
@@ -48,20 +46,19 @@ const Order = () => {
     });
 
     useEffect(() => {
-        if (orderDataInput.length === 4) {
-            let data = {
-                id: orderIdNext,
-                to_party: orderDataInput[2],
-                bill_amount: orderDataInput[1][4],
-                date: orderDataInput[3].toLocaleDateString(),
-                order: orderDataInput,
-            };
-            setTableData(e => [...e, data]);
-            setOrderIdNext(orderIdNext + 1);
-        }
-
-        console.log(orderDataInput);
-    }, [orderDataInput])
+        api_all_order(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()).then(
+            res => {
+                if (res.success) {
+                    setTableData(res.data);
+                    console.log(res);
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+    }, [date])
 
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
@@ -82,33 +79,28 @@ const Order = () => {
                 size: "auto"
             },
             {
-                accessorKey: 'to_party',
+                accessorKey: 'reciever_name',
                 header: 'Name',
                 size: "auto"
             },
             {
-                accessorKey: 'prev_bal',
-                header: 'Previous Balance',
+                accessorKey: 'box',
+                header: 'Box',
                 size: "auto"
             },
             {
-                accessorKey: 'bill_amount',
-                header: 'Bill Amount',
+                accessorKey: 'pcs',
+                header: 'Pcs',
                 size: "auto"
             },
             {
-                accessorKey: 'receivable_amount',
-                header: 'Receivable Amount',
+                accessorKey: 'crate',
+                header: 'CRate',
                 size: "auto"
             },
             {
-                accessorKey: 'received_amount',
-                header: 'Received Amount',
-                size: "auto"
-            },
-            {
-                accessorKey: 'curr_bal',
-                header: 'Current Balance',
+                accessorKey: 'amount',
+                header: 'Amount',
                 size: "auto"
             },
             {
@@ -120,37 +112,40 @@ const Order = () => {
                 header: 'Print',
                 size: "auto",
                 Cell: ({ cell }) => {
-                    return <Box style={{ cursor: "pointer" }} onClick={() => {
-                        let data = cell.row.original?.order?.length ? cell.row.original?.order[0]?.filter((e, i) => e.amount > 0) : [];
-                        // console.log(cell.row.original);
-                        if (data.length) {
-                            let printData = [];
-                            data.map((e, i) => {
-                                let template = ["", 0, 0, 0, 0, 0];
-                                template[0] = e.item_code;
-                                template[1] = e.box === undefined ? 0 : e.box;
-                                template[2] = e.pcs === undefined ? 0 : e.pcs;
-                                template[5] = e.amount;
-                                printData.push(template);
-                            })
-                            let foot = [];
-                            if (cell.row.original?.order?.length) {
-                                foot = [...cell.row.original?.order[1]];
-                                foot.splice(0, 1);
-                                const amt = foot[3];
-                                foot.splice(3, 1);
-                                foot.push(0);
-                                foot.push(0);
-                                foot.push(amt);
-                                printData.push(foot);
-                            }
+                    return <Box style={{ cursor: "pointer" }} onClick={async () => {
+                        console.log(cell.row.original?.id);
+                        await api_order_by_id(cell.row.original?.id).then(
+                            res => {
+                                if (res.success) {
+                                    console.log(res);
+                                    let order = res.data;
+                                    let items = order?.order_items;
 
-                            setPrintBodyData(printData);
-                            setMenuData([["To :", cell.row.original?.to_party, "", "No :", cell.row.original?.id],
-                            ["Address :", "", "", "Date :", cell.row.original?.date],
-                            ["GST No :", ""],
-                            ]);
-                        }
+                                    setMenuData([
+                                        ["Receiver Name:", order?.reciever_name, "", "", "", ""
+                                            , "Date:", order?.date],
+                                        ["Box:", order?.box, "Pcs:", order?.pcs, "CRate:", order?.crate, "Net Amount:", order?.amount]
+                                    ])
+
+                                    let body = [];
+                                    items.map((e, i) => {
+                                        let row = [];
+                                        row.push(e.supplier_name);
+                                        row.push(e.item);
+                                        row.push(e.box);
+                                        row.push(e.pcs);
+                                        row.push(e.crate);
+                                        row.push(e.amount);
+                                        body.push(row);
+                                    })
+                                    setPrintBodyData(body);
+                                } else {
+                                    showErrorToast({ title: "Error", message: res.message });
+                                }
+                            }
+                        ).catch(err => {
+                            console.log(err);
+                        })
                     }}>
                         <IconPrinter color={theme.colors.brand[7]} />
                     </Box>;
@@ -168,30 +163,58 @@ const Order = () => {
     };
 
     const deleteOrder = async id => {
-        const deleteIndex = tableData.findIndex((e, i) => e.id === id);
-        let data = tableData;
-        data.splice(deleteIndex, 1);
-        setTableData(data);
-        showSuccessToast({ title: "Deleted Order", message: "Deleted order successfully" });
+        await api_delete_order(id).then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    showSuccessToast({ title: "Success", message: res.message });
+                    api_all_order(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()).then(
+                        res => {
+                            if (res.success) {
+                                setTableData(res.data);
+                                console.log(res);
+                            } else {
+                                showErrorToast({ title: "Error", message: res.message });
+                            }
+                        }
+                    ).catch(err => {
+                        console.log(err);
+                    })
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     };
 
-    const children = <Box w={"100%"} p={0} m={0}>
-        <PrintModal
-            head={[]}
-            body={menuData}
-        />
-    </Box>;
+    const getEditOrder = async (id) => {
+        await api_order_by_id(id).then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    setEditingData(res.data);
+                    setIsSetOrder(true);
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+    }
 
     return (
         <div>
             {isSetOrder ? <>
-                <AppHeader title="ADD ORDER" /><SetOrder partyData={partyData} setOrderDataInput={setOrderDataInput} editingData={editingData} setIsSetOrder={setIsSetOrder} /></> :
+                <AppHeader title="ADD ORDER" /><SetOrder setFetchDate={setDate} partyData={partyData} setEditingData={setEditingData} editingData={editingData} setIsSetOrder={setIsSetOrder} /></> :
                 <>
                     <AppHeader title="ORDER" />
                     <Box p={5}>
-                        <Box mb={20}>
+                        <Flex mb={20} align={"flex-end"} gap={10}>
                             <DatePickerInput w={120} label="Select Date" value={date} onChange={setDate} />
-                        </Box>
+                        </Flex>
                         <MantineReactTable
                             columns={columns}
                             data={tableData}
@@ -205,9 +228,8 @@ const Order = () => {
                                             ml={10}
                                             sx={theme => ({ color: theme.colors.brand[7] })}
                                             onClick={() => {
-                                                console.log(row.original.order);
-                                                setEditingData(row.original.order);
-                                                setIsSetOrder(true);
+                                                console.log(row.original.id);
+                                                getEditOrder(row.original.id);
                                             }}
                                         >
                                             <IconEdit style={{ width: 20 }} />
@@ -243,10 +265,14 @@ const Order = () => {
             <div style={{ display: "none" }}>
                 <PrintModal
                     title="Orders"
-                    head={["Particulars", "Box", "Pcs", "Tax%", "Tax ₹", "Amount"]}
+                    head={["Name", "Particulars", "Box", "Pcs", "CRate", "Amount"]}
                     body={printBodyData}
                     ref={componentRef}
-                    children={children}
+                    children={
+                        <>
+                            <PrintModal body={menuData} />
+                        </>
+                    }
                 />
             </div>
 
