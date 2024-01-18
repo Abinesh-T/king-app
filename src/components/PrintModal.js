@@ -21,19 +21,13 @@ export const PrintModal = React.forwardRef((props, ref) => {
   ));
 
   const foot_rows = props.foot?.map((e, i) => (
-    <>
-      {isNaN(e) || !props.cols?.includes(i, 0) ? (
-        <td key={i}></td>
-      ) : (
-        <td key={i} style={{ color: "black", fontWeight: "bold" }}>
-          {e?.toFixed(2)}
-        </td>
-      )}
-    </>
+    <td key={i} style={{ color: "black", fontWeight: "bold" }}>
+      {e}
+    </td>
   ));
 
   return (
-    <div ref={ref} style={{ width: "100%" }}>
+    <div ref={ref} style={{ width: "400px" }}>
       <Container fluid mt={10}>
         {props.title ? <Flex align={"center"} justify={"center"} direction={"column"} gap={"lg"}>
           <Text color="black" fz={"lg"} fw={600}>
@@ -41,7 +35,7 @@ export const PrintModal = React.forwardRef((props, ref) => {
           </Text>
         </Flex> : <></>}
         {props.children}
-        <table width={"100%"} align="center" style={{ marginTop: "20px", border: "1px solid black" }}>
+        <table width={"100%"} align="center" style={{ marginTop: "10px", border: "1px solid black" }}>
           <thead
             style={{
               background: "white",
@@ -50,7 +44,7 @@ export const PrintModal = React.forwardRef((props, ref) => {
             <tr>
               {props.head?.map((e, i) => (
                 <th key={i}>
-                  <Text color="black" size={"md"}>
+                  <Text color="black" ta={"justify"} size={"md"}>
                     {e}
                   </Text>
                 </th>

@@ -110,7 +110,7 @@ const Party = () => {
         const payload = {
             id: partyForm.values.id,
             name: partyForm.values.name,
-            party_type: partyForm.values.party_type,
+            party_type: partyForm.values.party_type.toLowerCase(),
         }
 
         await api_edit_party(payload).then(
@@ -191,7 +191,7 @@ const Party = () => {
                         <Select
                             label="Select Type"
                             placeholder="Select Type"
-                            data={['Sender', 'Supplier', 'Receiver']}
+                            data={['sender', 'supplier', 'receiver']}
                             {...partyForm.getInputProps("party_type")} />
                     </Grid.Col>
                     <Grid.Col>

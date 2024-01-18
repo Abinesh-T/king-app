@@ -14,6 +14,7 @@ import { useQuery } from 'react-query';
 import { api_all_party } from '../Party/party.service';
 import { getAlteredSelectionParty } from 'services/helperFunctions';
 import { api_all_order, api_delete_order, api_order_by_id } from './order.service';
+import { api_all_item } from '../Item/item.service';
 
 const confirm_delete_props = {
     title: "Please confirm delete order",
@@ -33,6 +34,7 @@ const Order = () => {
     const [isSetOrder, setIsSetOrder] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [menuData, setMenuData] = useState([]);
+    const [foot, setFoot] = useState([]);
     const [date, setDate] = useState(new Date());
     const [editingData, setEditingData] = useState(null);
     const [printBodyData, setPrintBodyData] = useState([]);
@@ -114,6 +116,21 @@ const Order = () => {
                 Cell: ({ cell }) => {
                     return <Box style={{ cursor: "pointer" }} onClick={async () => {
                         console.log(cell.row.original?.id);
+                        let itemData = [];
+
+                        await api_all_item().then(
+                            res => {
+                                if (res.success) {
+                                    console.log(res);
+                                    itemData = res.data;
+                                } else {
+                                    showErrorToast({ title: "Error", message: res.message });
+                                }
+                            }
+                        ).catch(err => {
+                            console.log(err);
+                        })
+
                         await api_order_by_id(cell.row.original?.id).then(
                             res => {
                                 if (res.success) {
@@ -121,23 +138,27 @@ const Order = () => {
                                     let order = res.data;
                                     let items = order?.order_items;
 
-                                    setMenuData([
-                                        ["Receiver Name:", order?.reciever_name, "", "", "", ""
-                                            , "Date:", order?.date],
-                                        ["Box:", order?.box, "Pcs:", order?.pcs, "CRate:", order?.crate, "Net Amount:", order?.amount]
-                                    ])
+                                    setMenuData(<Flex direction={"column"} gap={5}>
+                                        <Text color='black' fw={500} fz={"lg"}>Party: {order?.reciever_name}</Text>
+                                        <Text color='black' fw={500} fz={"lg"}>Date: {order?.date}</Text>
+                                    </Flex>
+                                    )
 
                                     let body = [];
                                     items.map((e, i) => {
+                                        console.log(itemData, e.item);
+                                        let item = itemData.find((v) => v.id === e.item);
+                                        console.log(item?.name);
                                         let row = [];
                                         row.push(e.supplier_name);
-                                        row.push(e.item);
+                                        row.push(item?.name);
                                         row.push(e.box);
                                         row.push(e.pcs);
                                         row.push(e.crate);
                                         row.push(e.amount);
                                         body.push(row);
                                     })
+                                    setFoot(["Total", items.length + " items", order?.box, order?.pcs, order?.crate, order?.amount]);
                                     setPrintBodyData(body);
                                 } else {
                                     showErrorToast({ title: "Error", message: res.message });
@@ -265,14 +286,11 @@ const Order = () => {
             <div style={{ display: "none" }}>
                 <PrintModal
                     title="Orders"
-                    head={["Name", "Particulars", "Box", "Pcs", "CRate", "Amount"]}
+                    head={["Supplier", "Item", "Box", "Pcs", "CRate", "Amount"]}
                     body={printBodyData}
                     ref={componentRef}
-                    children={
-                        <>
-                            <PrintModal body={menuData} />
-                        </>
-                    }
+                    children={menuData}
+                    foot={foot}
                 />
             </div>
 

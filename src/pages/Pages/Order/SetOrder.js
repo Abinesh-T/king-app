@@ -47,6 +47,7 @@ const SetOrder = (props) => {
                             v["pcs"] = e.pcs;
                             v["crate"] = e.crate;
                             v["supplier_party"] = e.supplier;
+                            v["id"] = e.id;
                         }
                     })
                 })
@@ -240,18 +241,37 @@ const SetOrder = (props) => {
     const addItem = async (orderData, footer, toParty, date) => {
         // console.log(orderData, footer, toParty, date);
         let order_items = orderData?.filter((e, i) => (e.amount > 0) && (e.supplier_party));
-        // console.log(footer);
+        // console.log(order_items);
+
         let order_item = [];
-        order_items.map((e, i) => {
-            order_item.push({
-                item_id: e.item_id,
-                supplier_id: e.supplier_party,
-                box: e.box,
-                pcs: e.pcs,
-                crate: e.crate,
-                amount: e.amount,
-            });
-        })
+        if (props.editingData !== null) {
+            order_items.map((e, i) => {
+                let item_obj = {
+                    supplier_id: e.supplier_party,
+                    box: e.box,
+                    pcs: e.pcs,
+                    crate: e.crate,
+                    amount: e.amount,
+                }
+                if (e.id !== undefined) {
+                    item_obj["id"] = e.id;
+                } else {
+                    item_obj["item_id"] = e.item_id;
+                }
+                order_item.push(item_obj);
+            })
+        } else {
+            order_items.map((e, i) => {
+                order_item.push({
+                    item_id: e.item_id,
+                    supplier_id: e.supplier_party,
+                    box: e.box,
+                    pcs: e.pcs,
+                    crate: e.crate,
+                    amount: e.amount,
+                });
+            })
+        }
 
         const payload = {
             order: {
