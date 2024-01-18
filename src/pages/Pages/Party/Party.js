@@ -180,7 +180,7 @@ const Party = () => {
         </FloatingMenu>
         <Modal
             opened={partyModal}
-            onClose={() => { partyForm.reset(); setPartyModal(false) }}
+            onClose={() => { partyForm.reset(); setPartyModal(false) }} h="500px"
             title={isEditing ? "Edit Party" : "Add Party"}>
             <Box p={5}>
                 <Grid>
@@ -191,6 +191,7 @@ const Party = () => {
                         <Select
                             label="Select Type"
                             placeholder="Select Type"
+                            dropdownPosition="bottom"
                             data={['sender', 'supplier', 'receiver']}
                             {...partyForm.getInputProps("party_type")} />
                     </Grid.Col>

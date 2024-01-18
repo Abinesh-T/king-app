@@ -7,6 +7,7 @@ import { useQuery } from 'react-query';
 import { api_all_item } from '../Item/item.service';
 import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 import { api_add_order, api_edit_order } from './order.service';
+import { api_all_rate } from '../Rate/rate.service';
 
 const SetOrder = (props) => {
     const theme = useMantineTheme();
@@ -15,12 +16,32 @@ const SetOrder = (props) => {
     const [tableData, setTableData] = useState([]);
     const [isSelected, setIsSelected] = useState(false);
     const [itemData, setItemData] = useState([]);
+    const [errorParty, setErrorParty] = useState(null);
 
     const [toParty, setToParty] = useState(null);
     const [footer, setFooter] = useState(["", "Total", "", "", "", ""]);
     const [render, setRender] = useState(false);
-    const [rate, setRate] = useState({ box_rate: 20, pcs_rate: 5 });
+    const [rate, setRate] = useState({ box_rate: 0, pcs_rate: 0, crate_rate: 0 });
     const [date, setDate] = useState(new Date());
+
+    useEffect(() => {
+        api_all_rate().then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    if (res?.data?.id !== undefined) {
+                        rate["box_rate"] = res?.data?.box;
+                        rate["pcs_rate"] = res?.data?.pcs;
+                        rate["crate_rate"] = res?.data?.crate;
+                    }
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+    }, [])
 
     const fetch_item = useQuery("fetch_item", api_all_item, {
         refetchOnWindowFocus: false,
@@ -77,7 +98,7 @@ const SetOrder = (props) => {
                                 setRender(e => !e);
                             }}
                             placeholder="Select Party"
-                            data={props.partyData}
+                            data={props.partyData.filter((e, i) => e.type === "supplier")}
                         />
                     </div>;
                 },
@@ -170,7 +191,7 @@ const SetOrder = (props) => {
             },
             {
                 accessorKey: 'crate',
-                header: 'CRate',
+                header: 'Crate',
                 size: 50,
                 Cell: ((cell) => {
                     return <div>
@@ -180,11 +201,12 @@ const SetOrder = (props) => {
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
                                 cell.row.original[cell.column.id] = e;
+                                cell.row.original["amount"] = (rate.crate_rate * e) + (rate.box_rate * (isNaN(cell.row.original["box"]) ? 0 : cell.row.original["box"])) + (rate.pcs_rate * (isNaN(cell.row.original["pcs"]) ? 0 : cell.row.original["pcs"]));
                                 setRender(e => !e);
                             }}
                             hideControls
                             min={0}
-                            placeholder='CRate' />
+                            placeholder='Crate' />
                     </div>;
                 }),
                 Footer: ({ table }) => {
@@ -327,6 +349,8 @@ const SetOrder = (props) => {
         }
     }
 
+    console.log(props.partyData);
+
     return (<>
         <Box p={5} style={{ overflow: "hidden" }}>
             <Grid mb={5}>
@@ -337,17 +361,31 @@ const SetOrder = (props) => {
                         label="To Party"
                         placeholder="Select To Party"
                         searchable
-                        data={props.partyData}
+                        error={errorParty}
+                        data={props.partyData.filter((e, i) => e.type === "reciever")}
                     />
                     <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <Flex h={"100%"} direction={"column"} align={"center"} justify={"space-evenly"}>
                         <Button w={100} size='xs' leftIcon={<IconDeviceFloppy />} onClick={() => {
-                            addItem(orderData, footer, toParty, date);
+                            let order_items = orderData?.filter((e, i) => (e.amount > 0) && (e.supplier_party));
+
+                            if (toParty !== null && order_items.length) {
+                                addItem(orderData, footer, toParty, date);
+                                setErrorParty(null);
+                            } else {
+                                if (toParty === null) {
+                                    setErrorParty("Party Invalid");
+                                } else {
+                                    showErrorToast({ title: "Error", message: "Items not selected" })
+                                    setErrorParty(null);
+                                }
+                            }
                         }}>SAVE</Button>
                         <Button w={100} size='xs' variant="outline" leftIcon={<IconX />} onClick={() => {
                             props.setEditingData(null);
+                            setErrorParty(null);
                             props.setIsSetOrder(false);
                         }}>CANCEL</Button>
                     </Flex>

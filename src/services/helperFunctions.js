@@ -15,6 +15,7 @@ export const getAlteredSelectionParty = array => {
             label: e.name,
             value: e.id,
             id: e.id,
+            type: e.party_type
         };
     });
     return modifiedList;

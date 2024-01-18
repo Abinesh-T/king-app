@@ -22,6 +22,25 @@ const Rate = () => {
         },
     });
 
+    useEffect(() => {
+        api_all_rate().then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    if (res?.data?.id !== undefined) {
+                        rateForm.setFieldValue("box", res?.data?.box);
+                        rateForm.setFieldValue("pcs", res?.data?.pcs);
+                        rateForm.setFieldValue("crate", res?.data?.crate);
+                    }
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+    }, [])
+
     const addRate = async () => {
         console.log(rateForm.values);
 

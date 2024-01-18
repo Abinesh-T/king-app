@@ -39,11 +39,13 @@ const Order = () => {
     const [editingData, setEditingData] = useState(null);
     const [printBodyData, setPrintBodyData] = useState([]);
     const [partyData, setPartyData] = useState([]);
+    const [partySender, setPartySender] = useState(null);
 
     const fetch_party = useQuery("fetch_party", api_all_party, {
         refetchOnWindowFocus: false,
         onSuccess: res => {
             setPartyData(getAlteredSelectionParty(res.data));
+            setPartySender(res.data.find((e, i) => e.party_type === "sender")?.name);
         },
     });
 
@@ -97,7 +99,7 @@ const Order = () => {
             },
             {
                 accessorKey: 'crate',
-                header: 'CRate',
+                header: 'Crate',
                 size: "auto"
             },
             {
@@ -285,8 +287,8 @@ const Order = () => {
             }
             <div style={{ display: "none" }}>
                 <PrintModal
-                    title="Orders"
-                    head={["Supplier", "Item", "Box", "Pcs", "CRate", "Amount"]}
+                    title={partySender}
+                    head={["Supplier", "Item", "Box", "Pcs", "crate", "Amount"]}
                     body={printBodyData}
                     ref={componentRef}
                     children={menuData}
