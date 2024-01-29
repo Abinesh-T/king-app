@@ -17,6 +17,11 @@ code {
 
 // Normal table
 
+.mantine-Select-dropdown {
+  z-index: 1000000;
+  position: fixed;
+}
+
 .normal-table th {
   font-weight: 700 !important;
 }

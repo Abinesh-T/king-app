@@ -20,3 +20,7 @@ export const getAlteredSelectionParty = array => {
     });
     return modifiedList;
 };
+
+export const getUserDetails = () => {
+    return JSON.parse(localStorage.getItem("user"));
+}

@@ -26,6 +26,7 @@ const Login = () => {
                     console.log(res);
                     localStorage.setItem("access_token", res.token);
                     localStorage.setItem("username", res.user.username);
+                    localStorage.setItem("user", JSON.stringify(res.user));
                     navigate("/");
                     showSuccessToast({ title: "Success", message: res.message });
                 } else {

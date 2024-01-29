@@ -182,7 +182,7 @@ const Party = () => {
             opened={partyModal}
             onClose={() => { partyForm.reset(); setPartyModal(false) }} h="500px"
             title={isEditing ? "Edit Party" : "Add Party"}>
-            <Box p={5}>
+            <Box p={5} h={"80vh"}>
                 <Grid>
                     <Grid.Col>
                         <TextInput label="Name" placeholder='Enter Name' {...partyForm.getInputProps("name")} />

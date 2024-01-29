@@ -27,7 +27,6 @@ const Item = () => {
     const [itemModal, setItemModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [itemData, setItemData] = useState([]);
-    const [nextId, setNextId] = useState(1);
 
     const fetch_item = useQuery("fetch_item", api_all_item, {
         refetchOnWindowFocus: false,

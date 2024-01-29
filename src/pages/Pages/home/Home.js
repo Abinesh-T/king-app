@@ -4,7 +4,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconBusinessplan, IconPaperBag, IconTruckDelivery, IconUser } from "@tabler/icons";
+import { IconBusinessplan, IconPaperBag, IconReceipt, IconSettings, IconTruckDelivery, IconUser } from "@tabler/icons";
 import AppHeader from "components/AppHeader";
 import React from "react";
 import { useNavigate } from "react-router";
@@ -28,15 +28,21 @@ const Home = () => {
     },
     {
       id: 3,
-      icon: <IconBusinessplan color="grey" size={40} />,
-      title: "Rate",
-      link: "/rate",
+      icon: <IconSettings color="grey" size={40} />,
+      title: "Settings",
+      link: "/settings",
     },
     {
       id: 4,
       icon: <IconTruckDelivery color="grey" size={40} />,
       title: "Order",
       link: "/order",
+    },
+    {
+      id: 5,
+      icon: <IconReceipt color="grey" size={40} />,
+      title: "Billing",
+      link: "/billing",
     },
   ]
 

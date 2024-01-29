@@ -104,7 +104,6 @@ const Rate = () => {
     }
 
     return (<>
-        <AppHeader title="RATE" />
         <Box p={5}>
             <Flex align={"center"} justify={"center"} direction={"column"} >
                 <Box p={5}>

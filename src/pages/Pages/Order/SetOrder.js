@@ -7,7 +7,7 @@ import { useQuery } from 'react-query';
 import { api_all_item } from '../Item/item.service';
 import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 import { api_add_order, api_edit_order } from './order.service';
-import { api_all_rate } from '../Rate/rate.service';
+import { api_all_rate } from '../Settings/rate.service';
 
 const SetOrder = (props) => {
     const theme = useMantineTheme();
@@ -398,9 +398,13 @@ const SetOrder = (props) => {
                 enablePagination={false}
                 enableBottomToolbar={false}
                 enableTopToolbar={false}
-                enableStickyFooter
-                enableStickyHeader
-                mantineTableContainerProps={{ sx: { maxHeight: '65vh' } }}
+                // enableStickyFooter
+                // enableStickyHeader
+                mantineTableContainerProps={{
+                    sx: {
+
+                    }
+                }}
                 mantineTableBodyProps={{
                     sx: {
                         //stripe the rows, make odd rows a darker color
@@ -442,12 +446,18 @@ const SetOrder = (props) => {
                             paddingLeft: 1,
                             paddingTop: 5,
                             paddingBottom: 5,
+                            width: "100%"
                         }, '& th:nth-of-type(even)': {
                             padding: 0,
                             paddingLeft: 1,
                             paddingTop: 5,
                             paddingBottom: 5,
+                            width: "100%"
                         },
+                        position: "fixed",
+                        bottom: 0,
+                        left: 0,
+                        width: "100%"
                     },
                 }}
             />
