@@ -8,10 +8,10 @@ const General = () => {
                 <Box p={5}>
                     <Grid maw={500}>
                         <Grid.Col>
-                            <TextInput label="Driver Name" />
+                            <TextInput label="Driver Name" placeholder="Enter Driver Name" />
                         </Grid.Col>
                         <Grid.Col>
-                            <TextInput label="Vehicle No" />
+                            <TextInput label="Vehicle No" placeholder="Enter Vehicle No" />
                         </Grid.Col>
                         <Grid.Col>
                             <Flex align={"center"} justify={"right"}>
