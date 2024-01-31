@@ -2,7 +2,7 @@ import { httpClient } from "lib/axios";
 
 export const api_add_billing = async (payload) => {
     return await httpClient
-        .post('billing/', payload)
+        .post('sales_invoice/', payload)
         .then((res) => {
             return res.data;
         })
@@ -13,7 +13,7 @@ export const api_add_billing = async (payload) => {
 
 export const api_edit_billing = async (payload) => {
     return await httpClient
-        .put('billing/', payload)
+        .put('sales_invoice/', payload)
         .then((res) => {
             return res.data;
         })
@@ -24,7 +24,7 @@ export const api_edit_billing = async (payload) => {
 
 export const api_all_billing = async (date) => {
     return await httpClient
-        .get(`billing/?date=${date}`)
+        .get(`sales_invoice/?date=${date}`)
         .then((res) => {
             return res.data;
         })
@@ -35,7 +35,7 @@ export const api_all_billing = async (date) => {
 
 export const api_billing_by_id = async (id) => {
     return await httpClient
-        .get(`billing/?billing_id=${id}`)
+        .get(`sales_invoice/?invoice_id=${id}`)
         .then((res) => {
             return res.data;
         })
@@ -46,7 +46,7 @@ export const api_billing_by_id = async (id) => {
 
 export const api_delete_billing = async (id) => {
     return await httpClient
-        .delete(`billing/?billing_id=${id}`)
+        .delete(`sales_invoice/?invoice_id=${id}`)
         .then((res) => {
             return res.data;
         })

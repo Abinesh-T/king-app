@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from 'react-query';
 import { api_all_item } from '../Item/item.service';
 import { showErrorToast, showSuccessToast } from 'utilities/Toast';
-import { api_add_order, api_edit_order } from './billing.service';
+import { api_add_billing, api_add_order, api_edit_billing, api_edit_order } from './billing.service';
 import { api_all_rate } from '../Settings/rate.service';
 import FloatingMenu from 'components/FloatingMenu';
 
@@ -48,7 +48,7 @@ const SetBilling = (props) => {
 
                 console.log(props.editingData, order);
 
-                props.editingData?.order_items?.map((e, i) => {
+                props.editingData?.billing_items?.map((e, i) => {
                     order.map((v, i) => {
                         if (v.item_id === e.item) {
                             v["amount"] = e.amount;
@@ -226,6 +226,93 @@ const SetBilling = (props) => {
         handleTotal();
     }, [modalData])
 
+    const addItem = async (billingData, footer, toParty, date) => {
+        // console.log(billingData, footer, toParty, date);
+        let billing_items = billingData?.filter((e, i) => (e.amount > 0) && (e.supplier_party));
+        // console.log(billing_items);
+
+        let invoice_item = [];
+        if (props.editingData !== null) {
+            billing_items.map((e, i) => {
+                let item_obj = {
+                    supplier_id: e.supplier_party,
+                    rate: e.rate,
+                    qty: e.qty,
+                    amount: e.amount,
+                }
+                if (e.id !== undefined) {
+                    item_obj["id"] = e.id;
+                } else {
+                    item_obj["item_id"] = e.item_id;
+                }
+                invoice_item.push(item_obj);
+            })
+        } else {
+            billing_items.map((e, i) => {
+                invoice_item.push({
+                    item_id: e.item_id,
+                    supplier_id: e.supplier_party,
+                    rate: e.rate,
+                    qty: e.qty,
+                    amount: e.amount,
+                });
+            })
+        }
+
+        const payload = {
+            invoice: {
+                reciever_id: toParty,
+                date: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
+                rate: footer[3],
+                qty: footer[4],
+                amount: footer[5],
+                ...modalData,
+            },
+            invoice_item: invoice_item,
+        }
+
+        if (props.editingData !== null) {
+            payload.invoice['id'] = props.editingData?.id;
+        }
+
+        console.log(payload);
+
+        if (props.editingData !== null) {
+            await api_edit_billing(payload).then(
+                res => {
+                    if (res.success) {
+                        console.log(res);
+                        props.setFetchDate(date);
+                        props.setEditingData(null);
+                        showSuccessToast({ title: "Success", message: res.message });
+                        props.setIsSetBilling(false);
+                    } else {
+                        showErrorToast({ title: "Error", message: res.message });
+                    }
+                }
+            ).catch(err => {
+                console.log(err);
+            })
+
+        } else {
+            await api_add_billing(payload).then(
+                res => {
+                    if (res.success) {
+                        console.log(res);
+                        props.setFetchDate(date);
+                        props.setEditingData(null);
+                        showSuccessToast({ title: "Success", message: res.message });
+                        props.setIsSetBilling(false);
+                    } else {
+                        showErrorToast({ title: "Error", message: res.message });
+                    }
+                }
+            ).catch(err => {
+                console.log(err);
+            })
+        }
+    }
+
     return (<>
         <Box p={5} style={{ overflow: "hidden" }}>
             <Grid mb={5}>
@@ -244,10 +331,10 @@ const SetBilling = (props) => {
                 <Grid.Col span={6}>
                     <Flex h={"100%"} direction={"column"} align={"center"} justify={"space-evenly"}>
                         <Button w={100} size='xs' leftIcon={<IconDeviceFloppy />} onClick={() => {
-                            let order_items = billingData?.filter((e, i) => (e.amount > 0) && (e.supplier_party));
+                            let billing_items = billingData?.filter((e, i) => (e.amount > 0) && (e.supplier_party));
 
-                            if (toParty !== null && order_items.length) {
-                                // addItem(billingData, footer, toParty, date);
+                            if (toParty !== null && billing_items.length) {
+                                addItem(billingData, footer, toParty, date);
                                 setErrorParty(null);
                             } else {
                                 if (toParty === null) {

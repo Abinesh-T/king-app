@@ -11,6 +11,8 @@ import SetBilling from './SetBilling';
 import { api_all_party } from '../Party/party.service';
 import { getAlteredSelectionParty, getUserDetails } from 'services/helperFunctions';
 import { useQuery } from 'react-query';
+import { api_all_billing, api_delete_billing } from './billing.service';
+import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 
 const confirm_delete_props = {
     title: "Please confirm delete billing",
@@ -57,6 +59,21 @@ const Billing = () => {
         },
     });
 
+    useEffect(() => {
+        api_all_billing(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()).then(
+            res => {
+                if (res.success) {
+                    setTableData(res.data);
+                    console.log(res);
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+    }, [date])
+
     const columns = useMemo(
         () => [
             {
@@ -101,6 +118,30 @@ const Billing = () => {
     };
 
     const deleteBilling = async id => {
+        await api_delete_billing(id).then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    showSuccessToast({ title: "Success", message: res.message });
+                    api_all_billing(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()).then(
+                        res => {
+                            if (res.success) {
+                                setTableData(res.data);
+                                console.log(res);
+                            } else {
+                                showErrorToast({ title: "Error", message: res.message });
+                            }
+                        }
+                    ).catch(err => {
+                        console.log(err);
+                    })
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     };
 
     const getEditBilling = async (id) => {
