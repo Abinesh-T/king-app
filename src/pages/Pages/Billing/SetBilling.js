@@ -111,6 +111,7 @@ const SetBilling = (props) => {
                     return <div>
                         <NumberInput
                             miw={"40px"}
+                            precision={1}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -213,6 +214,9 @@ const SetBilling = (props) => {
     );
 
     const handleTotal = () => {
+        if (modalData.commission_percent > 0) {
+            modalData.commission = (modalData.commission_percent / 100) * modalData.balance;
+        }
         const total = modalData.balance - modalData.commission - modalData.rent - modalData.wages;
         setModalData(e => { e.total = total; return e });
         setRender(e => !e);
@@ -338,6 +342,7 @@ const SetBilling = (props) => {
                 left
                 size={50}
                 onClick={() => {
+                    handleTotal();
                     setShowModal(true);
                 }}
             >
@@ -357,6 +362,7 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
+                                precision={3}
                                 variant='unstyled'
                                 hideControls
                                 disabled
@@ -373,24 +379,26 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={3}>
                             <NumberInput
+                                precision={3}
                                 hideControls
-                                value={modalData.commission}
+                                value={modalData.commission_percent}
                                 onChange={(e) => {
                                     let data = structuredClone(modalData);
-                                    data.commission = e;
+                                    data.commission_percent = e;
                                     setModalData(data);
                                 }}
                             />
                         </Col>
                         <Col span={3}>
                             <NumberInput
+                                precision={3}
                                 variant='unstyled'
                                 hideControls
                                 disabled
-                                value={modalData.commission_percent}
+                                value={modalData.commission}
                                 onChange={(e) => {
                                     let data = structuredClone(modalData);
-                                    data.commission_percent = e;
+                                    data.commission = e;
                                     setModalData(data);
                                 }}
                             />
@@ -400,6 +408,7 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
+                                precision={3}
                                 hideControls
                                 value={modalData.rent}
                                 onChange={(e) => {
@@ -414,6 +423,7 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
+                                precision={3}
                                 hideControls
                                 value={modalData.wages}
                                 onChange={(e) => {
@@ -428,6 +438,7 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
+                                precision={3}
                                 variant='unstyled'
                                 hideControls
                                 disabled
@@ -439,9 +450,9 @@ const SetBilling = (props) => {
                             // }}
                             />
                         </Col>
-                        <Col span={12}>
+                        {/* <Col span={12}>
                             <Button w={"100%"}>Save</Button>
-                        </Col>
+                        </Col> */}
                     </Grid>
                 </Box>
             </Modal>

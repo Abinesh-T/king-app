@@ -8,6 +8,9 @@ import FloatingMenu from 'components/FloatingMenu';
 import { openConfirmModal } from '@mantine/modals';
 import { PrintModal } from 'components/PrintModal';
 import SetBilling from './SetBilling';
+import { api_all_party } from '../Party/party.service';
+import { getAlteredSelectionParty, getUserDetails } from 'services/helperFunctions';
+import { useQuery } from 'react-query';
 
 const confirm_delete_props = {
     title: "Please confirm delete billing",
@@ -30,6 +33,29 @@ const Billing = () => {
     const [date, setDate] = useState(new Date());
     const [editingData, setEditingData] = useState(null);
     const [partyData, setPartyData] = useState([]);
+    const [partySender, setPartySender] = useState(null);
+
+    const fetch_party = useQuery("fetch_party", api_all_party, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setPartyData(getAlteredSelectionParty(res.data));
+            const user = getUserDetails();
+            setPartySender(
+                <>
+                    <Flex align={"center"} justify={"center"} gap={5}>
+                        <Text>{user.company_name}</Text>
+                        <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
+                    </Flex>
+                    <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
+                        <Text>{user.address}</Text>
+                        <Text>Phone: {user.contact_no_left}, {user.contact_no_right}</Text>
+                        <Text>Vehicle No: TNxxYxxxx</Text>
+                        <Text>Driver Name: Name</Text>
+                    </Flex>
+                </>
+            );
+        },
+    });
 
     const columns = useMemo(
         () => [
@@ -142,6 +168,15 @@ const Billing = () => {
                         }}
                     >
                         <IconPlus color="white" />
+                    </FloatingMenu>
+                    <FloatingMenu
+                        m={5}
+                        left
+                        size={50}
+                        onClick={() => {
+                        }}
+                    >
+                        <IconPrinter color="white" />
                     </FloatingMenu>
                 </>
             }
