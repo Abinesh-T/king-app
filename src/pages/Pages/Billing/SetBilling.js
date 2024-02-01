@@ -6,15 +6,17 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from 'react-query';
 import { api_all_item } from '../Item/item.service';
 import { showErrorToast, showSuccessToast } from 'utilities/Toast';
-import { api_add_billing, api_add_order, api_edit_billing, api_edit_order } from './billing.service';
+import { api_add_billing, api_add_order, api_billing_parties, api_edit_billing, api_edit_order } from './billing.service';
 import { api_all_rate } from '../Settings/rate.service';
 import FloatingMenu from 'components/FloatingMenu';
+import { getAlteredSelectionParty } from 'services/helperFunctions';
 
 const SetBilling = (props) => {
     const theme = useMantineTheme();
 
     const [billingData, setBillingData] = useState([]);
     const [errorParty, setErrorParty] = useState(null);
+    const [party, setParty] = useState([]);
     const [toParty, setToParty] = useState(null);
     const [footer, setFooter] = useState(["", "Total", "", "", "", ""]);
     const [date, setDate] = useState(new Date());
@@ -29,6 +31,13 @@ const SetBilling = (props) => {
         rent: 0.00,
         wages: 0.00,
         total: 0.00,
+    });
+
+    const fetch_parties = useQuery("fetch_parties", api_billing_parties, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setParty(getAlteredSelectionParty(res.buyer_data));
+        },
     });
 
     const fetch_item = useQuery("fetch_item", api_all_item, {
@@ -111,7 +120,6 @@ const SetBilling = (props) => {
                     return <div>
                         <NumberInput
                             miw={"40px"}
-                            precision={1}
                             value={cell.row.original[cell.column.id]}
                             onChange={(e) => {
                                 cell.row._valuesCache[cell.column.id] = e;
@@ -324,7 +332,7 @@ const SetBilling = (props) => {
                         placeholder="Select To Party"
                         searchable
                         error={errorParty}
-                        data={props.partyData.filter((e, i) => e.type === "reciever")}
+                        data={party}
                     />
                     <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
                 </Grid.Col>
@@ -449,7 +457,6 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
-                                precision={3}
                                 variant='unstyled'
                                 hideControls
                                 disabled
@@ -466,7 +473,6 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={3}>
                             <NumberInput
-                                precision={3}
                                 hideControls
                                 value={modalData.commission_percent}
                                 onChange={(e) => {
@@ -478,7 +484,6 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={3}>
                             <NumberInput
-                                precision={3}
                                 variant='unstyled'
                                 hideControls
                                 disabled
@@ -495,7 +500,6 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
-                                precision={3}
                                 hideControls
                                 value={modalData.rent}
                                 onChange={(e) => {
@@ -510,7 +514,6 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
-                                precision={3}
                                 hideControls
                                 value={modalData.wages}
                                 onChange={(e) => {
@@ -525,7 +528,6 @@ const SetBilling = (props) => {
                         </Col>
                         <Col span={6}>
                             <NumberInput
-                                precision={3}
                                 variant='unstyled'
                                 hideControls
                                 disabled

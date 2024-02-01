@@ -44,6 +44,17 @@ export const api_billing_by_id = async (id) => {
         });
 };
 
+export const api_billing_parties = async () => {
+    return await httpClient
+        .get(`sales_invoice/?create_invoice=true`)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((err) => {
+            return err;
+        });
+};
+
 export const api_delete_billing = async (id) => {
     return await httpClient
         .delete(`sales_invoice/?invoice_id=${id}`)
