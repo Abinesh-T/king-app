@@ -16,7 +16,6 @@ const SetBilling = (props) => {
 
     const [billingData, setBillingData] = useState([]);
     const [errorParty, setErrorParty] = useState(null);
-    const [party, setParty] = useState([]);
     const [toParty, setToParty] = useState(null);
     const [footer, setFooter] = useState(["", "Total", "", "", "", ""]);
     const [date, setDate] = useState(new Date());
@@ -33,13 +32,6 @@ const SetBilling = (props) => {
         total: 0.00,
     });
 
-    const fetch_parties = useQuery("fetch_parties", api_billing_parties, {
-        refetchOnWindowFocus: false,
-        onSuccess: res => {
-            setParty(getAlteredSelectionParty(res.buyer_data));
-        },
-    });
-
     const fetch_item = useQuery("fetch_item", api_all_item, {
         refetchOnWindowFocus: false,
         onSuccess: res => {
@@ -54,16 +46,24 @@ const SetBilling = (props) => {
             if (props.editingData !== null) {
                 setToParty(props.editingData?.reciever);
                 setDate(new Date(props.editingData?.date + ", 00:00:00 AM"));
+                let data = structuredClone(modalData);
+                data["balance"] = props.editingData?.balance;
+                data["commission_percent"] = props.editingData?.commission_percent;
+                data["commission"] = props.editingData?.commission;
+                data["rent"] = props.editingData?.rent;
+                data["wages"] = props.editingData?.wages;
+                data["total"] = props.editingData?.total;
+                setModalData(data);
 
                 console.log(props.editingData, order);
 
-                props.editingData?.billing_items?.map((e, i) => {
+                props.editingData?.invoice_items?.map((e, i) => {
                     order.map((v, i) => {
                         if (v.item_id === e.item) {
                             v["amount"] = e.amount;
-                            v["box"] = e.box;
+                            v["qty"] = e.qty;
+                            v["rate"] = e.rate;
                             v["pcs"] = e.pcs;
-                            v["crate"] = e.crate;
                             v["supplier_party"] = e.supplier;
                             v["id"] = e.id;
                         }
@@ -332,7 +332,7 @@ const SetBilling = (props) => {
                         placeholder="Select To Party"
                         searchable
                         error={errorParty}
-                        data={party}
+                        data={props.partyData.filter((e, i) => e.type === "reciever")}
                     />
                     <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
                 </Grid.Col>

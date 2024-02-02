@@ -11,7 +11,7 @@ import SetBilling from './SetBilling';
 import { api_all_party } from '../Party/party.service';
 import { getAlteredSelectionParty, getUserDetails } from 'services/helperFunctions';
 import { useQuery } from 'react-query';
-import { api_all_billing, api_delete_billing } from './billing.service';
+import { api_all_billing, api_billing_by_id, api_delete_billing } from './billing.service';
 import { showErrorToast, showSuccessToast } from 'utilities/Toast';
 
 const confirm_delete_props = {
@@ -82,13 +82,8 @@ const Billing = () => {
                 size: "auto"
             },
             {
-                accessorKey: 'name',
+                accessorKey: 'reciever_name',
                 header: 'Name',
-                size: "auto"
-            },
-            {
-                accessorKey: 'item',
-                header: 'Item',
                 size: "auto"
             },
             {
@@ -102,8 +97,23 @@ const Billing = () => {
                 size: "auto"
             },
             {
-                accessorKey: 'amount',
-                header: 'Amount',
+                accessorKey: 'rent',
+                header: 'Rent',
+                size: "auto"
+            },
+            {
+                accessorKey: 'wages',
+                header: 'Wages',
+                size: "auto"
+            },
+            {
+                accessorKey: 'commission',
+                header: 'Commission',
+                size: "auto"
+            },
+            {
+                accessorKey: 'total',
+                header: 'Total',
                 size: "auto"
             },
         ],
@@ -145,6 +155,19 @@ const Billing = () => {
     };
 
     const getEditBilling = async (id) => {
+        await api_billing_by_id(id).then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    setEditingData(res.data);
+                    setIsSetBilling(true);
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
     }
 
     return (
