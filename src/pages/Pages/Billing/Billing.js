@@ -13,6 +13,8 @@ import { getAlteredSelectionParty, getUserDetails } from 'services/helperFunctio
 import { useQuery } from 'react-query';
 import { api_all_billing, api_billing_by_id, api_delete_billing } from './billing.service';
 import { showErrorToast, showSuccessToast } from 'utilities/Toast';
+import { useReactToPrint } from 'react-to-print';
+import { api_all_item } from '../Item/item.service';
 
 const confirm_delete_props = {
     title: "Please confirm delete billing",
@@ -36,6 +38,38 @@ const Billing = () => {
     const [editingData, setEditingData] = useState(null);
     const [partyData, setPartyData] = useState([]);
     const [partySender, setPartySender] = useState(null);
+    const [menuData, setMenuData] = useState([]);
+    const [foot, setFoot] = useState([]);
+    const [foots, setFoots] = useState([]);
+    const [head, setHead] = useState([]);
+    const [printBodyData, setPrintBodyData] = useState([]);
+    const [isAllPrint, setIsAllPrint] = useState(false);
+    const [itemData, setItemData] = useState([]);
+
+    const fetch_item = useQuery("fetch_item", api_all_item, {
+        refetchOnWindowFocus: false,
+        onSuccess: res => {
+            setItemData(res.data);
+        },
+    });
+
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
+
+    useEffect(() => {
+        if (printBodyData.length) {
+            handlePrint();
+        }
+    }, [printBodyData])
+
+    useEffect(() => {
+        if (isAllPrint) {
+            handlePrint();
+            setIsAllPrint(false);
+        }
+    }, [isAllPrint])
 
     const fetch_party = useQuery("fetch_party", api_all_party, {
         refetchOnWindowFocus: false,
@@ -116,6 +150,200 @@ const Billing = () => {
                 header: 'Total',
                 size: "auto"
             },
+            {
+                header: 'Print',
+                size: "auto",
+                Cell: ({ cell }) => {
+                    return <Flex gap={5}>
+                        <Tooltip label="Print without amount">
+                            <Box style={{ cursor: "pointer" }}
+                                onClick={async () => {
+                                    console.log(cell.row.original?.id);
+                                    let itemData = [];
+                                    let partyData = [];
+                                    let isShowAmount = false;
+
+                                    await api_all_party().then(
+                                        res => {
+                                            if (res.success) {
+                                                console.log(res);
+                                                partyData = res.data;
+                                            } else {
+                                                showErrorToast({ title: "Error", message: res.message });
+                                            }
+                                        }
+                                    ).catch(err => {
+                                        console.log(err);
+                                    })
+
+                                    await api_all_item().then(
+                                        res => {
+                                            if (res.success) {
+                                                console.log(res);
+                                                itemData = res.data;
+                                            } else {
+                                                showErrorToast({ title: "Error", message: res.message });
+                                            }
+                                        }
+                                    ).catch(err => {
+                                        console.log(err);
+                                    })
+
+                                    await api_billing_by_id(cell.row.original?.id).then(
+                                        res => {
+                                            if (res.success) {
+                                                console.log(res);
+                                                let invoice = res.data;
+                                                let items = invoice?.invoice_items;
+
+                                                setMenuData(<Flex direction={"column"} gap={5}>
+                                                    <Text color='black' fw={500} fz={"lg"}>Party: {partyData?.find((e) => e.id === invoice?.reciever)?.name}</Text>
+                                                    <Text color='black' fw={500} fz={"lg"}>Date: {invoice?.date}</Text>
+                                                </Flex>
+                                                )
+                                                console.log(isShowAmount);
+
+                                                let body = [];
+                                                items.map((e, i) => {
+                                                    // console.log(itemData, e.item);
+                                                    let item = itemData.find((v) => v.id === e.item);
+                                                    // console.log(item?.name);
+                                                    let row = [];
+                                                    row.push(partyData?.find((v) => v.id === e?.supplier)?.name);
+                                                    row.push(item?.name);
+                                                    row.push(e.qty);
+                                                    row.push(e.rate);
+                                                    if (isShowAmount) {
+                                                        row.push(e.amount);
+                                                    }
+                                                    body.push(row);
+                                                })
+
+                                                if (isShowAmount) {
+                                                    setFoot(["Total", invoice?.total]);
+                                                    setFoots([["Total", invoice?.amount],
+                                                    ["Commission", invoice?.commission],
+                                                    ["Rent", invoice?.rent],
+                                                    ["Wages", invoice?.wages]
+                                                    ]);
+                                                    setHead(["Supplier", "Item", "Qty", "Rate", "Amount"]);
+                                                } else {
+                                                    setFoot(["Total", invoice?.total]);
+                                                    setFoots([["Total", invoice?.amount],
+                                                    ["Commission", invoice?.commission],
+                                                    ["Rent", invoice?.rent],
+                                                    ["Wages", invoice?.wages]
+                                                    ]);
+                                                    setHead(["Supplier", "Item", "Qty", "Rate"]);
+                                                }
+                                                setPrintBodyData(body);
+                                            } else {
+                                                showErrorToast({ title: "Error", message: res.message });
+                                            }
+                                        }
+                                    ).catch(err => {
+                                        console.log(err);
+                                    })
+                                }}>
+                                <IconPrinter color={"black"} />
+                            </Box>
+                        </Tooltip>
+                        <Tooltip label="Print with amount">
+                            <Box style={{ cursor: "pointer" }}
+                                onClick={async () => {
+                                    console.log(cell.row.original?.id);
+                                    let itemData = [];
+                                    let partyData = [];
+                                    let isShowAmount = false;
+
+                                    await api_all_party().then(
+                                        res => {
+                                            if (res.success) {
+                                                console.log(res);
+                                                partyData = res.data;
+                                            } else {
+                                                showErrorToast({ title: "Error", message: res.message });
+                                            }
+                                        }
+                                    ).catch(err => {
+                                        console.log(err);
+                                    })
+
+                                    await api_all_item().then(
+                                        res => {
+                                            if (res.success) {
+                                                console.log(res);
+                                                itemData = res.data;
+                                            } else {
+                                                showErrorToast({ title: "Error", message: res.message });
+                                            }
+                                        }
+                                    ).catch(err => {
+                                        console.log(err);
+                                    })
+
+                                    await api_billing_by_id(cell.row.original?.id).then(
+                                        res => {
+                                            if (res.success) {
+                                                console.log(res);
+                                                let invoice = res.data;
+                                                let items = invoice?.invoice_items;
+
+                                                setMenuData(<Flex direction={"column"} gap={5}>
+                                                    <Text color='black' fw={500} fz={"lg"}>Party: {partyData?.find((e) => e.id === invoice?.reciever)?.name}</Text>
+                                                    <Text color='black' fw={500} fz={"lg"}>Date: {invoice?.date}</Text>
+                                                </Flex>
+                                                )
+                                                console.log(isShowAmount);
+
+                                                let body = [];
+                                                items.map((e, i) => {
+                                                    // console.log(itemData, e.item);
+                                                    let item = itemData.find((v) => v.id === e.item);
+                                                    // console.log(item?.name);
+                                                    let row = [];
+                                                    row.push(partyData?.find((v) => v.id === e?.supplier)?.name);
+                                                    row.push(item?.name);
+                                                    row.push(e.qty);
+                                                    row.push(e.rate);
+                                                    if (isShowAmount) {
+                                                        row.push(e.amount);
+                                                    }
+                                                    body.push(row);
+                                                })
+
+                                                if (isShowAmount) {
+                                                    setFoot(["Total", invoice?.total]);
+                                                    setFoots([["Total", invoice?.amount],
+                                                    ["Commission", invoice?.commission],
+                                                    ["Rent", invoice?.rent],
+                                                    ["Wages", invoice?.wages]
+                                                    ]);
+                                                    setHead(["Supplier", "Item", "Qty", "Rate", "Amount"]);
+                                                } else {
+                                                    setFoot(["Total", invoice?.total]);
+                                                    setFoots([["Total", invoice?.amount],
+                                                    ["Commission", invoice?.commission],
+                                                    ["Rent", invoice?.rent],
+                                                    ["Wages", invoice?.wages]
+                                                    ]);
+                                                    setHead(["Supplier", "Item", "Qty", "Rate"]);
+                                                }
+                                                setPrintBodyData(body);
+                                            } else {
+                                                showErrorToast({ title: "Error", message: res.message });
+                                            }
+                                        }
+                                    ).catch(err => {
+                                        console.log(err);
+                                    })
+                                }}>
+                                <IconPrinter color={theme.colors.brand[7]} />
+                            </Box>
+                        </Tooltip>
+                    </Flex>;
+                },
+            },
         ],
         [],
     );
@@ -167,6 +395,113 @@ const Billing = () => {
             }
         ).catch(err => {
             console.log(err);
+        })
+    }
+
+    const getInvoicePrint = async (id, isShowAmount) => {
+        let invoice_print = {
+            menuData: <></>,
+            foot: [],
+            printBodyData: [],
+        };
+        let partyData = [];
+
+        await api_all_party().then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    partyData = res.data;
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+
+        await api_billing_by_id(id).then(
+            res => {
+                if (res.success) {
+                    console.log(res);
+                    let invoice = res.data;
+                    let items = invoice?.invoice_items;
+
+                    invoice_print["menuData"] = <Flex direction={"column"} gap={5}>
+                        <Text color='black' fw={500} fz={"lg"}>Party: {partyData?.find((e) => e.id === invoice?.reciever)?.name}</Text>
+                        <Text color='black' fw={500} fz={"lg"}>Date: {invoice?.date}</Text>
+                    </Flex>
+
+                    let body = [];
+                    items.map((e, i) => {
+                        // console.log(itemData, e.item);
+                        let item = itemData.find((v) => v.id === e.item);
+                        // console.log(item?.name);
+                        let row = [];
+                        row.push(partyData?.find((v) => v.id === e?.supplier)?.name);
+                        row.push(item?.name);
+                        row.push(e.qty);
+                        row.push(e.rate);
+                        if (isShowAmount) {
+                            row.push(e.amount);
+                        }
+                        body.push(row);
+                    })
+
+                    if (isShowAmount) {
+                        invoice_print["foot"] = ["Total", invoice?.total];
+                        invoice_print["foots"] = [["Total", invoice?.amount],
+                        ["Commission", invoice?.commission],
+                        ["Rent", invoice?.rent],
+                        ["Wages", invoice?.wages]
+                        ];
+                    } else {
+                        invoice_print["foot"] = ["Total", invoice?.total];
+                        invoice_print["foots"] = [["Total", invoice?.amount],
+                        ["Commission", invoice?.commission],
+                        ["Rent", invoice?.rent],
+                        ["Wages", invoice?.wages]
+                        ];
+                    }
+                    invoice_print["printBodyData"] = body;
+                } else {
+                    showErrorToast({ title: "Error", message: res.message });
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+        return invoice_print;
+    }
+
+    const getInvoicePrintElement = async (isShowAmount) => {
+        let element_print = [];
+        tableData.map(async (e, i) => {
+            await getInvoicePrint(e.id, isShowAmount).then(data => {
+                console.log(data);
+                element_print.push(
+                    <PrintModal
+                        head={isShowAmount ? ["Supplier", "Item", "Qty", "Rate", "Amount"] : ["Supplier", "Item", "Qty", "Rate"]}
+                        body={data?.printBodyData}
+                        children={data?.menuData}
+                        foot={data?.foot}
+                        foots={data?.foots}
+                    />
+                )
+            })
+            if ((tableData.length - 1) === i) {
+                console.log(element_print);
+
+                let orders_element = <div>
+                    {element_print.map((e, i) =>
+                        <div key={i}>{e}</div>
+                    )}
+                </div>
+                setMenuData(orders_element);
+                setFoot([]);
+                setPrintBodyData([]);
+                setHead([]);
+                setIsAllPrint(true);
+            }
         })
     }
 
@@ -238,6 +573,18 @@ const Billing = () => {
                         left
                         size={50}
                         onClick={() => {
+                            getInvoicePrintElement(false);
+                        }}
+                    >
+                        <IconPrinter color="black" />
+                    </FloatingMenu>
+                    <FloatingMenu
+                        m={5}
+                        ml={60}
+                        left
+                        size={50}
+                        onClick={() => {
+                            getInvoicePrintElement(true);
                         }}
                     >
                         <IconPrinter color="white" />
@@ -245,6 +592,17 @@ const Billing = () => {
                 </>
             }
 
+            <div style={{ display: "none" }}>
+                <PrintModal
+                    title={partySender}
+                    head={head}
+                    body={printBodyData}
+                    ref={componentRef}
+                    children={menuData}
+                    foot={foot}
+                    foots={foots}
+                />
+            </div>
         </div>
     )
 }

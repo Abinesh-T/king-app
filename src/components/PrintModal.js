@@ -26,6 +26,16 @@ export const PrintModal = React.forwardRef((props, ref) => {
     </td>
   ));
 
+  const foot_multiple_rows = props.foots?.map((e, i) => (
+    <tr key={i + 1}>
+      {e.map((h, index) => (
+        <td key={index} style={{ color: "black", fontWeight: "bold" }}>
+          {h}
+        </td>
+      ))}
+    </tr>
+  ));
+
   return (
     <div ref={ref} style={{ width: "400px" }}>
       <Container fluid mt={10}>
@@ -53,6 +63,7 @@ export const PrintModal = React.forwardRef((props, ref) => {
           </thead>
           <tbody>{rows}</tbody>
           <tfoot>
+            {foot_multiple_rows}
             <tr>{foot_rows}</tr>
           </tfoot>
         </table>
