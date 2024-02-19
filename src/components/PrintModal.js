@@ -21,7 +21,7 @@ export const PrintModal = React.forwardRef((props, ref) => {
   ));
 
   const foot_rows = props.foot?.map((e, i) => (
-    <td key={i} style={{ color: "black", fontWeight: "bold" }}>
+    <td key={i} style={{ color: "black", fontWeight: 500 }}>
       {e}
     </td>
   ));
@@ -29,7 +29,7 @@ export const PrintModal = React.forwardRef((props, ref) => {
   const foot_multiple_rows = props.foots?.map((e, i) => (
     <tr key={i + 1}>
       {e.map((h, index) => (
-        <td key={index} style={{ color: "black", fontWeight: "bold" }}>
+        <td key={index} style={{ color: "black", fontWeight: 500 }}>
           {h}
         </td>
       ))}
@@ -39,13 +39,21 @@ export const PrintModal = React.forwardRef((props, ref) => {
   return (
     <div ref={ref} style={{ width: "400px" }}>
       <Container fluid mt={10}>
-        {props.title ? <Flex align={"center"} justify={"center"} direction={"column"} gap={"lg"}>
-          <Text color="black" fz={"lg"} fw={600}>
-            {props.title}
-          </Text>
-        </Flex> : <></>}
+        {props.title ? (
+          <Flex align={"center"} justify={"center"} direction={"column"} gap={"lg"}>
+            <Text color="black" fz={"lg"} fw={600}>
+              {props.title}
+            </Text>
+          </Flex>
+        ) : (
+          <></>
+        )}
         {props.children}
-        <table width={"100%"} align="center" style={{ marginTop: "10px", border: "1px solid black" }}>
+        <table
+          width={"100%"}
+          align="center"
+          style={{ marginTop: "10px", border: "1px solid black" }}
+        >
           <thead
             style={{
               background: "white",
