@@ -27,7 +27,7 @@ import FloatingMenu from "components/FloatingMenu";
 import { MantineReactTable } from "mantine-react-table";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "react-query";
-import { getAlteredSelectionParty } from "services/helperFunctions";
+import { getAlteredSelectionParty, structuredClone } from "services/helperFunctions";
 import { showErrorToast, showSuccessToast } from "utilities/Toast";
 
 import {
@@ -86,18 +86,18 @@ const SetBilling = props => {
 
         console.log(props.editingData, order);
 
-        props.editingData?.invoice_items?.map((e, i) => {
-          order.map((v, i) => {
-            if (v.item_id === e.item) {
-              v["amount"] = e.amount;
-              v["qty"] = e.qty;
-              v["rate"] = e.rate;
-              v["pcs"] = e.pcs;
-              v["supplier_party"] = e.supplier;
-              v["id"] = e.id;
-            }
-          });
-        });
+        // props.editingData?.invoice_items?.map((e, i) => {
+        //   order.map((v, i) => {
+        //     if (v.item_id === e.item) {
+        //       v["amount"] = e.amount;
+        //       v["qty"] = e.qty;
+        //       v["rate"] = e.rate;
+        //       v["pcs"] = e.pcs;
+        //       v["supplier_party"] = e.supplier;
+        //       v["id"] = e.id;
+        //     }
+        //   });
+        // });
 
         setBillingData(order);
       } else {
