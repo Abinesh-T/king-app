@@ -10,6 +10,7 @@ import App from "App";
 import { ProtectedRoutes } from "./ProtectedRoute";
 import Billing from "pages/Pages/Billing/Billing";
 import Settings from "pages/Pages/Settings/Settings";
+import React from 'react';
 
 export const routes = (
   <Routes>

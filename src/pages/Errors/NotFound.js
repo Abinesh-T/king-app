@@ -1,5 +1,6 @@
 import { Button, Container, Group, Text, Title, createStyles } from "@mantine/core";
 import { useNavigate } from "react-router";
+import React from 'react';
 
 const useStyles = createStyles(theme => ({
   root: {

@@ -1,5 +1,6 @@
 import { showNotification } from "@mantine/notifications";
 import { IconCircleCheck, IconExclamationCircle } from "@tabler/icons";
+import React from 'react';
 
 /**
  * Shows success notification toast

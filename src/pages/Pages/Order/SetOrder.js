@@ -63,7 +63,7 @@ const SetOrder = props => {
     onSuccess: res => {
       setItemData(res.data);
       let order = [];
-      res.data?.map((e, i) => {
+      res.data.map((e) => {
         order.push({
           code: e.code,
           item_id: e.id,
@@ -75,8 +75,8 @@ const SetOrder = props => {
 
         console.log(props.editingData, order);
 
-        props.editingData?.order_items?.map((e, i) => {
-          order.map((v, i) => {
+        props.editingData?.order_items?.map((e) => {
+          order.map((v) => {
             if (v.item_id === e.item) {
               v["amount"] = e.amount;
               v["box"] = e.box;

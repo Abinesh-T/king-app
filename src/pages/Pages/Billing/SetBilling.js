@@ -66,7 +66,7 @@ const SetBilling = props => {
     onSuccess: res => {
       setItemData(res.data);
       let order = [];
-      res.data?.map((e, i) => {
+      res.data.map((e, i) => {
         order.push({
           code: e.code,
           item_id: e.id,

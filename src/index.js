@@ -10,6 +10,7 @@ import "./styles/global.scss";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import { routes } from "./router/Routes";
+import React from 'react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
