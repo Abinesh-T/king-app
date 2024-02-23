@@ -35,6 +35,7 @@ import SetOrder from "./SetOrder";
 import { api_all_order, api_delete_order, api_order_by_id } from "./order.service";
 import { api_all_item } from "../Item/item.service";
 import { api_all_party } from "../Party/party.service";
+import { PrintModalHtml } from "components/PrintModalHtml";
 
 const confirm_delete_props = {
   title: "Please confirm delete order",
@@ -613,6 +614,15 @@ const Order = () => {
           foot={foot}
         />
       </div>
+      {console.log(
+        PrintModalHtml({
+          title: partySender,
+          head: head,
+          body: printBodyData,
+          children: menuData,
+          foot: foot,
+        })
+      )}
     </div>
   );
 };
