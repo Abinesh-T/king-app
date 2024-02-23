@@ -24,6 +24,7 @@ import {
 import AppHeader from "components/AppHeader";
 import FloatingMenu from "components/FloatingMenu";
 import { PrintModal } from "components/PrintModal";
+import { PrintModalHtml } from "components/PrintModalHtml";
 import { MantineReactTable } from "mantine-react-table";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "react-query";
@@ -613,6 +614,15 @@ const Order = () => {
           foot={foot}
         />
       </div>
+      {console.log(
+        PrintModalHtml({
+          title: partySender,
+          head: head,
+          body: printBodyData,
+          children: menuData,
+          foot: foot,
+        })
+      )}
     </div>
   );
 };
