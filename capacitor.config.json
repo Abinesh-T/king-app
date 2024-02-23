@@ -1,0 +1,24 @@
+{
+  "appId": "com.kingwizard.kingVeg",
+  "appName": "kingVeg",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "webDir": "build",
+  "plugins": {
+    "cordova-plugin-android-permissions":"1.1.5",
+    "cordova-plugin-bluetooth-serial":"0.4.7"
+  },
+  "cordova": {},
+  "android": {
+    "allowMixedContent": true,
+    "appendUserAgent": "",
+    "overrideUserAgent": "",
+    "permissions": [
+      "ACCESS_COARSE_LOCATION",
+      "ACCESS_FINE_LOCATION",
+      "BLUETOOTH",
+      "BLUETOOTH_ADMIN",
+      "BLUETOOTH_CONNECT" 
+    ]
+  }
+}

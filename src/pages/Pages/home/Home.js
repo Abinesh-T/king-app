@@ -1,13 +1,17 @@
 import {
   Box,
+  Button,
   Flex,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconBusinessplan, IconPaperBag, IconReceipt, IconSettings, IconTruckDelivery, IconUser } from "@tabler/icons";
+import { IconBusinessplan, IconDeviceFloppy, IconPaperBag, IconReceipt, IconSettings, IconTruckDelivery, IconUser } from "@tabler/icons";
 import AppHeader from "components/AppHeader";
-import React from "react";
 import { useNavigate } from "react-router";
+import { connectToDevice, listDevices, printDevice } from "services/bluetoothFunction";
+import React, { useEffect } from 'react';
+import { getPermission } from "services/helperFunctions";
+
 
 const Home = () => {
   const theme = useMantineTheme();
@@ -46,6 +50,10 @@ const Home = () => {
     },
   ]
 
+  useEffect(() => {
+    getPermission();
+  }, []);
+
   return (
     <>
       <AppHeader />
@@ -59,6 +67,16 @@ const Home = () => {
           ))
         }
       </Flex>
+      <Button
+        w={100}
+        size="xs"
+        leftIcon={<IconDeviceFloppy />}
+        onClick={() => {
+          printDevice();
+        }}
+      >
+        GetList
+      </Button>
     </>
   );
 };

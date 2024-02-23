@@ -24,3 +24,32 @@ export const getAlteredSelectionParty = array => {
 export const getUserDetails = () => {
     return JSON.parse(localStorage.getItem("user"));
 }
+
+export const getPermission = () => {
+    document.addEventListener('deviceready', onDeviceReady, false);
+
+    function onDeviceReady() {
+        // Ensure the plugins object exists
+        if (!window.cordova || !window.cordova.plugins || !window.cordova.plugins.permissions) {
+            console.error("Cordova plugins not available.");
+            return;
+        }
+        // Check if permission is already granted
+        window.cordova.plugins.permissions.checkPermission(window.cordova.plugins.permissions.BLUETOOTH_CONNECT, (status) => {
+            if (!status.hasPermission) {
+                // Request permission
+                window.cordova.plugins.permissions.requestPermission(window.cordova.plugins.permissions.BLUETOOTH_CONNECT, (status) => {
+                    if (!status.hasPermission) {
+                        // Permission denied
+                        console.error("Permission to use the bluetooth is not granted.");
+                    }
+                }, (err) => {
+                    console.error(err);
+                    window.cordova.plugins.permissions.requestPermission(window.cordova.plugins.permissions.BLUETOOTH_CONNECT);
+                });
+            }
+        }, (err) => {
+            console.error(err);
+        });
+    }
+}

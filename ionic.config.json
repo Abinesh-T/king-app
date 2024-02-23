@@ -1,0 +1,7 @@
+{
+  "name": "KingVeg",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

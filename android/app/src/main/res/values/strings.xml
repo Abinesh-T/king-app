@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">kingVeg</string>
+    <string name="title_activity_main">kingVeg</string>
+    <string name="package_name">com.kingwizard.kingVeg</string>
+    <string name="custom_url_scheme">com.kingwizard.kingVeg</string>
+</resources>
