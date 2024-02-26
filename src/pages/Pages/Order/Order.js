@@ -23,8 +23,7 @@ import {
 } from "@tabler/icons";
 import AppHeader from "components/AppHeader";
 import FloatingMenu from "components/FloatingMenu";
-import { PrintModal } from "components/PrintModal";
-import { PrintModalHtml } from "components/PrintModalHtml";
+import { PrintModalHtml, PrintModalTable, getMerged } from "components/PrintModalHtml";
 import { MantineReactTable } from "mantine-react-table";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "react-query";
@@ -77,20 +76,30 @@ const Order = () => {
       setPartyData(getAlteredSelectionParty(res.data));
       const user = getUserDetails();
       setPartySender(
-        <>
-          <Flex align={"center"} justify={"center"} gap={5}>
-            <Text>{user.company_name}</Text>
-            <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
-          </Flex>
-          <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
-            <Text>{user.address}</Text>
-            <Text>
-              Phone: {user.contact_no_left}, {user.contact_no_right}
-            </Text>
-            <Text>Vehicle No: {user?.vehicle_no}</Text>
-            <Text>Driver Name: {user?.driver_name}</Text>
-          </Flex>
-        </>
+        // <>
+        //   <Flex align={"center"} justify={"center"} gap={5}>
+        //     <Text>{user.company_name}</Text>
+        //     <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
+        //   </Flex>
+        //   <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
+        //     <Text>{user.address}</Text>
+        //     <Text>
+        //       Phone: {user.contact_no_left}, {user.contact_no_right}
+        //     </Text>
+        //     <Text>Vehicle No: {user?.vehicle_no}</Text>
+        //     <Text>Driver Name: {user?.driver_name}</Text>
+        //   </Flex>
+        // </>
+        `<div style="text-align: center;">
+          <h1>${user.company_name}</h1>
+          <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
+        </div>
+        <div style="text-align: center;">
+          <p>${user.address}</p>
+          <p>Phone: ${user.contact_no_left}, ${user.contact_no_right}</p>
+          <p>Vehicle No: ${user?.vehicle_no}</p>
+          <p>Driver Name: ${user?.driver_name}</p>
+        </div>`
       );
     },
   });
@@ -117,13 +126,41 @@ const Order = () => {
 
   useEffect(() => {
     if (printBodyData.length) {
-      handlePrint();
+      const printWindow = window.open("", "", "width=600,height=600");
+      printWindow.document.open();
+      printWindow.document.write(
+        PrintModalHtml({
+          title: partySender,
+          head: head,
+          body: printBodyData,
+          children: menuData,
+          foot: foot,
+        })
+      );
+      printWindow.document.close();
+
+      printWindow.print();
+      printWindow.close();
     }
   }, [printBodyData]);
 
   useEffect(() => {
     if (isAllPrint) {
-      handlePrint();
+      const printWindow = window.open("", "", "width=600,height=600");
+      printWindow.document.open();
+      printWindow.document.write(
+        PrintModalHtml({
+          title: partySender,
+          head: head,
+          body: printBodyData,
+          children: menuData,
+          foot: foot,
+        })
+      );
+      printWindow.document.close();
+
+      printWindow.print();
+      printWindow.close();
       setIsAllPrint(false);
     }
   }, [isAllPrint]);
@@ -200,14 +237,20 @@ const Order = () => {
                           let items = order?.order_items;
 
                           setMenuData(
-                            <Flex direction={"column"} gap={5}>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Party: {order?.reciever_name}
-                              </Text>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Date: {order?.date}
-                              </Text>
-                            </Flex>
+                            // <Flex direction={"column"} gap={5}>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Party: {order?.reciever_name}
+                            //   </Text>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Date: {order?.date}
+                            //   </Text>
+                            // </Flex>
+
+                            `
+                            <div style="font-size: 16px;">
+                              <b>Party: ${order?.reciever_name}</b> <br>
+                              <b>Date: ${order?.date}</b>
+                            </div>`
                           );
                           console.log(isShowAmount);
 
@@ -290,14 +333,19 @@ const Order = () => {
                           let items = order?.order_items;
 
                           setMenuData(
-                            <Flex direction={"column"} gap={5}>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Party: {order?.reciever_name}
-                              </Text>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Date: {order?.date}
-                              </Text>
-                            </Flex>
+                            // <Flex direction={"column"} gap={5}>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Party: {order?.reciever_name}
+                            //   </Text>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Date: {order?.date}
+                            //   </Text>
+                            // </Flex>
+                            `
+                            <div style="font-size: 16px;">
+                              <b>Party: ${order?.reciever_name}</b> <br>
+                              <b>Date: ${order?.date}</b>
+                            </div>`
                           );
                           console.log(isShowAmount);
 
@@ -422,16 +470,21 @@ const Order = () => {
           let order = res.data;
           let items = order?.order_items;
 
-          order_print["menuData"] = (
-            <Flex direction={"column"} gap={5}>
-              <Text color="black" fw={500} fz={"lg"}>
-                Party: {order?.reciever_name}
-              </Text>
-              <Text color="black" fw={500} fz={"lg"}>
-                Date: {order?.date}
-              </Text>
-            </Flex>
-          );
+          order_print["menuData"] =
+            // <Flex direction={"column"} gap={5}>
+            //   <Text color="black" fw={500} fz={"lg"}>
+            //     Party: {order?.reciever_name}
+            //   </Text>
+            //   <Text color="black" fw={500} fz={"lg"}>
+            //     Date: {order?.date}
+            //   </Text>
+            // </Flex>
+
+            `
+            <div style="font-size: 16px;">
+              <b>Party: ${order?.reciever_name}</b> <br>
+              <b>Date: ${order?.date}</b>
+            </div>`;
 
           let body = [];
           items.map((e, i) => {
@@ -485,28 +538,22 @@ const Order = () => {
       await getOrdersPrint(e.id, isShowAmount).then(data => {
         console.log(data);
         element_print.push(
-          <PrintModal
-            head={
-              isShowAmount
-                ? ["Supplier", "Item", "Box", "Pcs", "crate", "Amount"]
-                : ["Supplier", "Item", "Box", "Pcs", "crate"]
-            }
-            body={data?.printBodyData}
-            children={data?.menuData}
-            foot={data?.foot}
-          />
+          PrintModalTable({
+            head: isShowAmount
+              ? ["Supplier", "Item", "Box", "Pcs", "crate", "Amount"]
+              : ["Supplier", "Item", "Box", "Pcs", "crate"],
+            body: data?.printBodyData,
+            children: data?.menuData,
+            foot: data?.foot,
+          })
         );
       });
       if (tableData.length - 1 === i) {
         console.log(element_print);
 
-        let orders_element = (
-          <div>
-            {element_print.map((e, i) => (
-              <div key={i}>{e}</div>
-            ))}
-          </div>
-        );
+        let orders_element = `<div>
+            ${getMerged(element_print.map((e, i) => `${e}`))}
+          </div>`;
         setMenuData(orders_element);
         setFoot([]);
         setPrintBodyData([]);
@@ -604,7 +651,7 @@ const Order = () => {
           </FloatingMenu>
         </>
       )}
-      <div style={{ display: "none" }}>
+      {/* <div style={{ display: "none" }}>
         <PrintModal
           title={partySender}
           head={head}
@@ -613,16 +660,7 @@ const Order = () => {
           children={menuData}
           foot={foot}
         />
-      </div>
-      {console.log(
-        PrintModalHtml({
-          title: partySender,
-          head: head,
-          body: printBodyData,
-          children: menuData,
-          foot: foot,
-        })
-      )}
+      </div> */}
     </div>
   );
 };
