@@ -24,7 +24,7 @@ import {
 } from "@tabler/icons";
 import AppHeader from "components/AppHeader";
 import FloatingMenu from "components/FloatingMenu";
-import { PrintModal } from "components/PrintModal";
+import { PrintModalHtml, PrintModalTable, getMerged } from "components/PrintModalHtml";
 import { MantineReactTable } from "mantine-react-table";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "react-query";
@@ -81,13 +81,41 @@ const Billing = () => {
 
   useEffect(() => {
     if (printBodyData.length) {
-      handlePrint();
+      const printWindow = window.open("", "", "width=600,height=600");
+      printWindow.document.open();
+      printWindow.document.write(
+        PrintModalHtml({
+          title: partySender,
+          head: head,
+          body: printBodyData,
+          children: menuData,
+          foot: foot,
+        })
+      );
+      printWindow.document.close();
+
+      printWindow.print();
+      printWindow.close();
     }
   }, [printBodyData]);
 
   useEffect(() => {
     if (isAllPrint) {
-      handlePrint();
+      const printWindow = window.open("", "", "width=600,height=600");
+      printWindow.document.open();
+      printWindow.document.write(
+        PrintModalHtml({
+          title: partySender,
+          head: head,
+          body: printBodyData,
+          children: menuData,
+          foot: foot,
+        })
+      );
+      printWindow.document.close();
+
+      printWindow.print();
+      printWindow.close();
       setIsAllPrint(false);
     }
   }, [isAllPrint]);
@@ -98,20 +126,30 @@ const Billing = () => {
       setPartyData(getAlteredSelectionParty(res.data));
       const user = getUserDetails();
       setPartySender(
-        <>
-          <Flex align={"center"} justify={"center"} gap={5}>
-            <Text>{user.company_name}</Text>
-            <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
-          </Flex>
-          <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
-            <Text>{user.address}</Text>
-            <Text>
-              Phone: {user.contact_no_left}, {user.contact_no_right}
-            </Text>
-            <Text>Vehicle No: TNxxYxxxx</Text>
-            <Text>Driver Name: Name</Text>
-          </Flex>
-        </>
+        // <>
+        //   <Flex align={"center"} justify={"center"} gap={5}>
+        //     <Text>{user.company_name}</Text>
+        //     <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
+        //   </Flex>
+        //   <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
+        //     <Text>{user.address}</Text>
+        //     <Text>
+        //       Phone: {user.contact_no_left}, {user.contact_no_right}
+        //     </Text>
+        //     <Text>Vehicle No: TNxxYxxxx</Text>
+        //     <Text>Driver Name: Name</Text>
+        //   </Flex>
+        // </>
+        `<div style="text-align: center;">
+          <h1>${user.company_name}</h1>
+          <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
+        </div>
+        <div style="text-align: center;">
+          <p>${user.address}</p>
+          <p>Phone: ${user.contact_no_left}, ${user.contact_no_right}</p>
+          <p>Vehicle No: ${user?.vehicle_no}</p>
+          <p>Driver Name: ${user?.driver_name}</p>
+        </div>`
       );
     },
   });
@@ -222,14 +260,19 @@ const Billing = () => {
                           let items = invoice?.invoice_items;
 
                           setMenuData(
-                            <Flex direction={"column"} gap={5}>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
-                              </Text>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Date: {invoice?.date}
-                              </Text>
-                            </Flex>
+                            // <Flex direction={"column"} gap={5}>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
+                            //   </Text>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Date: {invoice?.date}
+                            //   </Text>
+                            // </Flex>
+                            `
+            <div style="font-size: 16px;">
+              <b>Party: ${partyData?.find(e => e.id === invoice?.reciever)?.name}</b> <br>
+              <b>Date: ${invoice?.date}</b>
+            </div>`
                           );
                           console.log(isShowAmount);
 
@@ -324,14 +367,19 @@ const Billing = () => {
                           let items = invoice?.invoice_items;
 
                           setMenuData(
-                            <Flex direction={"column"} gap={5}>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
-                              </Text>
-                              <Text color="black" fw={500} fz={"lg"}>
-                                Date: {invoice?.date}
-                              </Text>
-                            </Flex>
+                            // <Flex direction={"column"} gap={5}>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
+                            //   </Text>
+                            //   <Text color="black" fw={500} fz={"lg"}>
+                            //     Date: {invoice?.date}
+                            //   </Text>
+                            // </Flex>
+                            `
+            <div style="font-size: 16px;">
+              <b>Party: ${partyData?.find(e => e.id === invoice?.reciever)?.name}</b> <br>
+              <b>Date: ${invoice?.date}</b>
+            </div>`
                           );
                           console.log(isShowAmount);
 
@@ -469,16 +517,20 @@ const Billing = () => {
           let invoice = res.data;
           let items = invoice?.invoice_items;
 
-          invoice_print["menuData"] = (
-            <Flex direction={"column"} gap={5}>
-              <Text color="black" fw={500} fz={"lg"}>
-                Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
-              </Text>
-              <Text color="black" fw={500} fz={"lg"}>
-                Date: {invoice?.date}
-              </Text>
-            </Flex>
-          );
+          invoice_print["menuData"] =
+            // <Flex direction={"column"} gap={5}>
+            //   <Text color="black" fw={500} fz={"lg"}>
+            //     Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
+            //   </Text>
+            //   <Text color="black" fw={500} fz={"lg"}>
+            //     Date: {invoice?.date}
+            //   </Text>
+            // </Flex>
+            `
+            <div style="font-size: 16px;">
+              <b>Party: ${partyData?.find(e => e.id === invoice?.reciever)?.name}</b> <br>
+              <b>Date: ${invoice?.date}</b>
+            </div>`;
 
           let body = [];
           items.map((e, i) => {
@@ -530,29 +582,22 @@ const Billing = () => {
       await getInvoicePrint(e.id, isShowAmount).then(data => {
         console.log(data);
         element_print.push(
-          <PrintModal
-            head={
-              isShowAmount
-                ? ["Supplier", "Rate", "Item", "Qty", "Amount"]
-                : ["Supplier", "Rate", "Item", "Qty"]
-            }
-            body={data?.printBodyData}
-            children={data?.menuData}
-            foot={data?.foot}
-            foots={data?.foots}
-          />
+          PrintModalTable({
+            head: isShowAmount
+              ? ["Supplier", "Rate", "Item", "Qty", "Amount"]
+              : ["Supplier", "Rate", "Item", "Qty"],
+            body: data?.printBodyData,
+            children: data?.menuData,
+            foot: data?.foot,
+            foots: data?.foots,
+          })
         );
       });
       if (tableData.length - 1 === i) {
-        console.log(element_print);
-
-        let orders_element = (
-          <div>
-            {element_print.map((e, i) => (
-              <div key={i}>{e}</div>
-            ))}
-          </div>
-        );
+        // console.log(element_print);
+        let orders_element = `<div>
+        ${getMerged(element_print.map((e, i) => `${e}`))}
+      </div>`;
         setMenuData(orders_element);
         setFoot([]);
         setPrintBodyData([]);
@@ -659,7 +704,7 @@ const Billing = () => {
         </>
       )}
 
-      <div style={{ display: "none" }}>
+      {/* <div style={{ display: "none" }}>
         <PrintModal
           title={partySender}
           head={head}
@@ -669,7 +714,7 @@ const Billing = () => {
           foot={foot}
           foots={foots}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
