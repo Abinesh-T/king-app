@@ -1,19 +1,16 @@
 
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
-import EscPosEncoder from 'esc-pos-encoder';
 import { getPermission } from './helperFunctions';
 
 
-export const listDevices = async () => {
-    try {
+export const listDevices =  () => {
+    return new Promise(async (resolve, reject) => {
         getPermission()
         const list = await BluetoothSerial.list();
-        console.log(list);
-        return list;
-    } catch (error) {
-        console.log('Device searcg failed', error);
+        list ? resolve(list) : reject(list);
 
-    }
+    });
+
 
 }
 async function connectToDevice(deviceId) {
@@ -32,24 +29,12 @@ async function connectToDevice(deviceId) {
         });
     });
 }
-export const printDevice = async (data, deviceId) => {
-    const encoder = new EscPosEncoder();
-    const commands = encoder
-        .initialize()
-        .text('The quick brown fox jumps over the lazy dog')
-        .text('The quick brown fox jumps over the lazy dog')
-        .text('The quick brown fox jumps over the lazy dog')
-        .text('The quick brown fox jumps over the lazy dog')
-        .newline()
-        .qrcode('https://nielsleenheer.com')
-        .newline()
-        .cut()
-        .encode();
-
+export const printDevice = async (data) => {
     try {
-        const { result, subscription } =await connectToDevice('DC:0D:30:68:A3:A7');
+        const selectedDevice = JSON.parse(localStorage.getItem('printer'))
+        const { result, subscription } =await connectToDevice(selectedDevice?.id);
         console.log(result);
-        await BluetoothSerial.write(commands, () => {
+        await BluetoothSerial.write(data, () => {
             console.log('Write Successful');
             subscription.unsubscribe(); // Unsubscribe after successful write
         }, (err) => {

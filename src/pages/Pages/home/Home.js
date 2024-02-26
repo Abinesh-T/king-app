@@ -67,16 +67,6 @@ const Home = () => {
           ))
         }
       </Flex>
-      <Button
-        w={100}
-        size="xs"
-        leftIcon={<IconDeviceFloppy />}
-        onClick={() => {
-          printDevice();
-        }}
-      >
-        GetList
-      </Button>
     </>
   );
 };

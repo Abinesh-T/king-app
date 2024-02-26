@@ -24,7 +24,21 @@ export const getAlteredSelectionParty = array => {
 export const getUserDetails = () => {
     return JSON.parse(localStorage.getItem("user"));
 }
+export const checkPlatform = () => {
+    return new Promise((resolve, reject) => {
+        document.addEventListener('deviceready', onDeviceReady, false);
 
+        function onDeviceReady() {
+            if (window.cordova && window.cordova.platformId === 'android' || window.cordova.platformId === 'ios') {
+                resolve('Cordova');
+            } else if (window.Capacitor) {
+                resolve('Capacitor');
+            } else {
+                reject('Unknown platform');
+            }
+        }
+    });
+}
 export const getPermission = () => {
     document.addEventListener('deviceready', onDeviceReady, false);
 
