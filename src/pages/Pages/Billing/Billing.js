@@ -90,6 +90,7 @@ const Billing = () => {
           body: printBodyData,
           children: menuData,
           foot: foot,
+          foots: foots,
         })
       );
       printWindow.document.close();
@@ -110,6 +111,7 @@ const Billing = () => {
           body: printBodyData,
           children: menuData,
           foot: foot,
+          foots: foots,
         })
       );
       printWindow.document.close();
@@ -141,7 +143,7 @@ const Billing = () => {
         //   </Flex>
         // </>
         `<div style="text-align: center;">
-          <h1>${user.company_name}</h1>
+          <h2>${user.company_name}</h2>
           <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
         </div>
         <div style="text-align: center;">
@@ -685,6 +687,7 @@ const Billing = () => {
             left
             size={50}
             onClick={() => {
+              setFoots(e => (e = []));
               getInvoicePrintElement(false);
             }}
           >
@@ -696,6 +699,7 @@ const Billing = () => {
             left
             size={50}
             onClick={() => {
+              setFoots(e => (e = []));
               getInvoicePrintElement(true);
             }}
           >
