@@ -91,7 +91,7 @@ const Order = () => {
         //   </Flex>
         // </>
         `<div style="text-align: center;">
-          <h2>${user.company_name}</h2>
+        <p style="font-size: 22px">${user.company_name}</p>
           <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
         </div>
         <div style="text-align: center;">
