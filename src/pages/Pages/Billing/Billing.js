@@ -90,6 +90,7 @@ const Billing = () => {
           body: printBodyData,
           children: menuData,
           foot: foot,
+          foots: foots,
         })
       );
       printWindow.document.close();
@@ -110,6 +111,7 @@ const Billing = () => {
           body: printBodyData,
           children: menuData,
           foot: foot,
+          foots: foots,
         })
       );
       printWindow.document.close();
@@ -685,6 +687,7 @@ const Billing = () => {
             left
             size={50}
             onClick={() => {
+              setFoots(e => (e = []));
               getInvoicePrintElement(false);
             }}
           >
@@ -696,6 +699,7 @@ const Billing = () => {
             left
             size={50}
             onClick={() => {
+              setFoots(e => (e = []));
               getInvoicePrintElement(true);
             }}
           >
