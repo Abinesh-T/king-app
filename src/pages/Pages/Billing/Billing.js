@@ -143,7 +143,7 @@ const Billing = () => {
         //   </Flex>
         // </>
         `<div style="text-align: center;">
-          <h1>${user.company_name}</h1>
+          <h2>${user.company_name}</h2>
           <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
         </div>
         <div style="text-align: center;">

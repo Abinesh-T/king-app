@@ -149,7 +149,7 @@ export const PrintModalHtml = props => {
         ${
           props.title
             ? `<div style="width: 100%;display: flex;align-items: center;justify-content:center;flex-direction: column;gap:10px;">
-            <h1 style="color:black;font-size: 10px;font-weight:600;">
+            <h1 style="color:black;font-size: 16px;font-weight:600;">
               ${props.title}
             </h1>
           </div>`
