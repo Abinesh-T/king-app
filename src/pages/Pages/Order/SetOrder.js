@@ -106,7 +106,7 @@ const SetOrder = props => {
             <div>
               <Select
                 searchable
-                dropdownPosition="bottom"
+                //dropdownPosition="bottom"
                 value={cell.row.original[cell.column.id]}
                 onChange={e => {
                   cell.row._valuesCache[cell.column.id] = e;
@@ -447,11 +447,14 @@ const SetOrder = props => {
           enableColumnActions={false}
           enablePagination={false}
           enableBottomToolbar={false}
-          enableTopToolbar={false}
+          // enableTopToolbar={false}
           // enableStickyFooter
-          // enableStickyHeader
+          enableStickyHeader
           mantineTableContainerProps={{
-            sx: {},
+            sx: {
+              maxHeight: "55vh",
+              marginBottom: "50px",
+            },
           }}
           mantineTableBodyProps={{
             sx: {

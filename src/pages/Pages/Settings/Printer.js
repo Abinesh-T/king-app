@@ -7,16 +7,14 @@ const Printer = () => {
   const [modalOpened, setModalOpened] = useState(false);
   const [printerList, setPrinterList] = useState([]);
   const [printerSelected, setPrinterSelected] = useState("None");
+  const [printer, setPrinter] = useState("None");
 
   useEffect(() => {
     setPrinterList(["Printer1", "Printer2", "Printer3"]);
 
+    setPrinter(localStorage.getItem("printer"));
     setPrinterSelected(localStorage.getItem("printer"));
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("printer", printerSelected);
-  }, [printerSelected]);
 
   return (
     <Box p={5} mt={10}>
@@ -51,16 +49,25 @@ const Printer = () => {
         title="Select Printer"
       >
         <Flex direction={"column"} justify={"center"} gap={"lg"}>
-          {printerList?.map((printer, index) => (
+          {printerList?.map((e, index) => (
             <Radio
               key={index}
               fw={"bold"}
-              label={printer}
+              label={e}
               variant="outline"
-              checked={printerSelected === printer}
-              onChange={event => setPrinterSelected(event.currentTarget.checked ? printer : "None")}
+              checked={printer === e}
+              onChange={event => setPrinter(event.currentTarget.checked ? e : "None")}
             />
           ))}
+          <Button
+            onClick={() => {
+              localStorage.setItem("printer", printer);
+              setPrinterSelected(printer);
+              setModalOpened(false);
+            }}
+          >
+            Save
+          </Button>
         </Flex>
       </Modal>
     </Box>
