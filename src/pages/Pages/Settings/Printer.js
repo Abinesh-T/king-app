@@ -1,33 +1,20 @@
 import { Box, Button, Flex, Grid, Modal, Radio, Text, useMantineTheme } from "@mantine/core";
 import { IconPrinter } from "@tabler/icons";
 import React, { useEffect, useState } from "react";
-import { connectToDevice, listDevices, printDevice } from "services/bluetoothFunction";
 
 const Printer = () => {
   const theme = useMantineTheme();
   const [modalOpened, setModalOpened] = useState(false);
   const [printerList, setPrinterList] = useState([]);
-  const [printerSelected, setPrinterSelected] = useState();
+  const [printerSelected, setPrinterSelected] = useState("None");
+  const [printer, setPrinter] = useState("None");
 
   useEffect(() => {
-    let selectedDevice = JSON.parse(localStorage.getItem("printer"));
-    console.log(!selectedDevice);
-    if (selectedDevice) {
-      console.log(selectedDevice.name);
-      setPrinterSelected(selectedDevice);
-    } else {
-      listDevices().then((result) => {
-        setPrinterList(result);
-        console.log(result);
-      }).catch((err) => {
-        console.log(err);
-      });
-    }
-  }, []);
+    setPrinterList(["Printer1", "Printer2", "Printer3"]);
 
-  // useEffect(() => {
-  //   localStorage.setItem("printer", printerSelected);
-  // }, [printerSelected]);
+    setPrinter(localStorage.getItem("printer"));
+    setPrinterSelected(localStorage.getItem("printer"));
+  }, []);
 
   return (
     <Box p={5} mt={10}>
@@ -37,7 +24,7 @@ const Printer = () => {
             <Grid.Col>
               <Flex align={"center"} gap={"lg"}>
                 <IconPrinter color={theme.colors.brand[8]} />
-                <Text fw={"bold"}>{printerSelected?.name}</Text>
+                <Text fw={"bold"}>{printerSelected}</Text>
               </Flex>
             </Grid.Col>
             <Grid.Col>
@@ -62,20 +49,25 @@ const Printer = () => {
         title="Select Printer"
       >
         <Flex direction={"column"} justify={"center"} gap={"lg"}>
-          {printerList?.map((printer, index) => (
+          {printerList?.map((e, index) => (
             <Radio
               key={index}
               fw={"bold"}
-              label={printer.name}
+              label={e}
               variant="outline"
-              checked={printerSelected === printer}
-              onChange={(event) => {
-                console.log(event.currentTarget.checked ? printer : null);
-                setPrinterSelected(event.currentTarget.checked ? printer : null);
-                localStorage.setItem("printer", JSON.stringify(printer));
-              }}
+              checked={printer === e}
+              onChange={event => setPrinter(event.currentTarget.checked ? e : "None")}
             />
           ))}
+          <Button
+            onClick={() => {
+              localStorage.setItem("printer", printer);
+              setPrinterSelected(printer);
+              setModalOpened(false);
+            }}
+          >
+            Save
+          </Button>
         </Flex>
       </Modal>
     </Box>

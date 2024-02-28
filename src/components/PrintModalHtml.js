@@ -30,7 +30,7 @@ export const PrintModalTable = props => {
     (e, i) =>
       `<td style="width: ${
         props.head?.findIndex(v => v === "Item") === i ? "100" : i === 0 ? "43" : "32"
-      }%;text-align: start;color: black; font-weight: 500;" >${e}</td>`
+      }%;text-align: start;color: black; " >${e}</td>`
   );
 
   const foot_multiple_rows = props.foots?.map(
@@ -38,6 +38,7 @@ export const PrintModalTable = props => {
       `<tr style="
       width: 100%;
       display: flex;
+      font-weight: bold";
       justify-content: center;
       align-items: center;
   ">
@@ -46,7 +47,7 @@ export const PrintModalTable = props => {
           (h, index) =>
             `<td style="width: ${
               props.head?.findIndex(v => v === "Item") === index ? "100" : index === 0 ? "43" : "32"
-            }%;text-align: start;color: black;font-weight: 500;" >
+            }%;text-align: start;color: black;" >
           ${h}
         </td>`
         )
@@ -78,12 +79,13 @@ export const PrintModalTable = props => {
               )}
             </tr>
           </thead>
-          <tbody>${getMerged(rows)}</tbody>
-          <tfoot>
+          <tbody style="font-weight: bold";">${getMerged(rows)}</tbody>
+          <tfoot style="font-weight: bold";">
             ${foot_multiple_rows ? getMerged(foot_multiple_rows) : ""}
             <tr style="
             width: 100%;
             display: flex;
+            font-weight: bold";
             justify-content: center;
             align-items: center;
         ">${getMerged(foot_rows)}</tr>
@@ -117,7 +119,7 @@ export const PrintModalHtml = props => {
     (e, i) =>
       `<td style="width: ${
         props.head?.findIndex(v => v === "Item") === i ? "100" : i === 0 ? "43" : "32"
-      }%;text-align: start;color: black; font-weight: 500;" >${e}</td>`
+      }%;text-align: start;color: black; " >${e}</td>`
   );
 
   const foot_multiple_rows = props.foots?.map(
@@ -125,6 +127,7 @@ export const PrintModalHtml = props => {
       `<tr style="
       width: 100%;
       display: flex;
+      font-weight: bold";
       justify-content: center;
       align-items: center;
   ">
@@ -133,7 +136,7 @@ export const PrintModalHtml = props => {
           (h, index) =>
             `<td style="width: ${
               props.head?.findIndex(v => v === "Item") === index ? "100" : index === 0 ? "43" : "32"
-            }%;text-align: start;color: black;font-weight: 500;" >
+            }%;text-align: start;color: black;" >
           ${h}
         </td>`
         )
@@ -202,12 +205,13 @@ export const PrintModalHtml = props => {
               )}
             </tr>
           </thead>
-          <tbody>${getMerged(rows)}</tbody>
-          <tfoot>
+          <tbody style="font-weight: bold;">${getMerged(rows)}</tbody>
+          <tfoot style="font-weight: bold;">
             ${foot_multiple_rows ? getMerged(foot_multiple_rows) : ""}
             <tr style="
             width: 100%;
             display: flex;
+            font-weight: bold";
             justify-content: center;
             align-items: center;
         ">${getMerged(foot_rows)}</tr>

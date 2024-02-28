@@ -171,6 +171,67 @@ const Billing = () => {
       });
   }, [date]);
 
+  const printRow = async (cell, isShowAmount) => {
+    console.log(cell.row.original?.id);
+
+    await api_billing_by_id(cell.row.original?.id)
+      .then(res => {
+        if (res.success) {
+          console.log(res);
+          let invoice = res.data;
+          let items = invoice?.invoice_items;
+
+          setMenuData(
+            `
+            <div style="font-size: 16px;">
+            <b>Party: ${invoice?.reciever_name}</b> <br>
+            <b>Date: ${invoice?.date}</b>
+            </div>`
+          );
+          console.log(isShowAmount);
+
+          let body = [];
+          items.map((e, i) => {
+            let row = [];
+            row.push(e?.supplier_name);
+            row.push(e.rate);
+            row.push(e.item_name);
+            row.push(e.qty);
+            if (isShowAmount) {
+              row.push(e.amount);
+            }
+            body.push(row);
+          });
+
+          if (isShowAmount) {
+            setFoot(["Total", invoice?.total]);
+            setFoots([
+              ["SubTotal", invoice?.amount],
+              ["Commission", invoice?.commission],
+              ["Rent", invoice?.rent],
+              ["Wages", invoice?.wages],
+            ]);
+            setHead(["Supplier", "Rate", "Item", "Qty", "Amount"]);
+          } else {
+            setFoot(["Total", invoice?.total]);
+            setFoots([
+              ["SubTotal", invoice?.amount],
+              ["Commission", invoice?.commission],
+              ["Rent", invoice?.rent],
+              ["Wages", invoice?.wages],
+            ]);
+            setHead(["Supplier", "Rate", "Item", "Qty"]);
+          }
+          setPrintBodyData(body);
+        } else {
+          showErrorToast({ title: "Error", message: res.message });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -222,105 +283,8 @@ const Billing = () => {
               <Tooltip label="Print without amount">
                 <Box
                   style={{ cursor: "pointer" }}
-                  onClick={async () => {
-                    console.log(cell.row.original?.id);
-                    let itemData = [];
-                    let partyData = [];
-                    let isShowAmount = false;
-
-                    await api_all_party()
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          partyData = res.data;
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
-
-                    await api_all_item()
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          itemData = res.data;
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
-
-                    await api_billing_by_id(cell.row.original?.id)
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          let invoice = res.data;
-                          let items = invoice?.invoice_items;
-
-                          setMenuData(
-                            // <Flex direction={"column"} gap={5}>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
-                            //   </Text>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Date: {invoice?.date}
-                            //   </Text>
-                            // </Flex>
-                            `
-            <div style="font-size: 16px;">
-              <b>Party: ${partyData?.find(e => e.id === invoice?.reciever)?.name}</b> <br>
-              <b>Date: ${invoice?.date}</b>
-            </div>`
-                          );
-                          console.log(isShowAmount);
-
-                          let body = [];
-                          items.map((e, i) => {
-                            // console.log(itemData, e.item);
-                            let item = itemData.find(v => v.id === e.item);
-                            // console.log(item?.name);
-                            let row = [];
-                            row.push(partyData?.find(v => v.id === e?.supplier)?.name);
-                            row.push(e.rate);
-                            row.push(item?.name);
-                            row.push(e.qty);
-                            if (isShowAmount) {
-                              row.push(e.amount);
-                            }
-                            body.push(row);
-                          });
-
-                          if (isShowAmount) {
-                            setFoot(["Total", invoice?.total]);
-                            setFoots([
-                              ["SubTotal", invoice?.amount],
-                              ["Commission", invoice?.commission],
-                              ["Rent", invoice?.rent],
-                              ["Wages", invoice?.wages],
-                            ]);
-                            setHead(["Supplier", "Rate", "Item", "Qty", "Amount"]);
-                          } else {
-                            setFoot(["Total", invoice?.total]);
-                            setFoots([
-                              ["SubTotal", invoice?.amount],
-                              ["Commission", invoice?.commission],
-                              ["Rent", invoice?.rent],
-                              ["Wages", invoice?.wages],
-                            ]);
-                            setHead(["Supplier", "Rate", "Item", "Qty"]);
-                          }
-                          setPrintBodyData(body);
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
+                  onClick={() => {
+                    printRow(cell, false);
                   }}
                 >
                   <IconPrinter color={"black"} />
@@ -329,105 +293,8 @@ const Billing = () => {
               <Tooltip label="Print with amount">
                 <Box
                   style={{ cursor: "pointer" }}
-                  onClick={async () => {
-                    console.log(cell.row.original?.id);
-                    let itemData = [];
-                    let partyData = [];
-                    let isShowAmount = true;
-
-                    await api_all_party()
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          partyData = res.data;
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
-
-                    await api_all_item()
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          itemData = res.data;
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
-
-                    await api_billing_by_id(cell.row.original?.id)
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          let invoice = res.data;
-                          let items = invoice?.invoice_items;
-
-                          setMenuData(
-                            // <Flex direction={"column"} gap={5}>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
-                            //   </Text>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Date: {invoice?.date}
-                            //   </Text>
-                            // </Flex>
-                            `
-            <div style="font-size: 16px;">
-              <b>Party: ${partyData?.find(e => e.id === invoice?.reciever)?.name}</b> <br>
-              <b>Date: ${invoice?.date}</b>
-            </div>`
-                          );
-                          console.log(isShowAmount);
-
-                          let body = [];
-                          items.map((e, i) => {
-                            // console.log(itemData, e.item);
-                            let item = itemData.find(v => v.id === e.item);
-                            // console.log(item?.name);
-                            let row = [];
-                            row.push(partyData?.find(v => v.id === e?.supplier)?.name);
-                            row.push(e.rate);
-                            row.push(item?.name);
-                            row.push(e.qty);
-                            if (isShowAmount) {
-                              row.push(e.amount);
-                            }
-                            body.push(row);
-                          });
-
-                          if (isShowAmount) {
-                            setFoot(["Total", invoice?.total]);
-                            setFoots([
-                              ["SubTotal", invoice?.amount],
-                              ["Commission", invoice?.commission],
-                              ["Rent", invoice?.rent],
-                              ["Wages", invoice?.wages],
-                            ]);
-                            setHead(["Supplier", "Rate", "Item", "Qty", "Amount"]);
-                          } else {
-                            setFoot(["Total", invoice?.total]);
-                            setFoots([
-                              ["SubTotal", invoice?.amount],
-                              ["Commission", invoice?.commission],
-                              ["Rent", invoice?.rent],
-                              ["Wages", invoice?.wages],
-                            ]);
-                            setHead(["Supplier", "Rate", "Item", "Qty"]);
-                          }
-                          setPrintBodyData(body);
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
+                  onClick={() => {
+                    printRow(cell, true);
                   }}
                 >
                   <IconPrinter color={theme.colors.brand[7]} />
@@ -497,20 +364,6 @@ const Billing = () => {
       foot: [],
       printBodyData: [],
     };
-    let partyData = [];
-
-    await api_all_party()
-      .then(res => {
-        if (res.success) {
-          console.log(res);
-          partyData = res.data;
-        } else {
-          showErrorToast({ title: "Error", message: res.message });
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
 
     await api_billing_by_id(id)
       .then(res => {
@@ -519,30 +372,18 @@ const Billing = () => {
           let invoice = res.data;
           let items = invoice?.invoice_items;
 
-          invoice_print["menuData"] =
-            // <Flex direction={"column"} gap={5}>
-            //   <Text color="black" fw={500} fz={"lg"}>
-            //     Party: {partyData?.find(e => e.id === invoice?.reciever)?.name}
-            //   </Text>
-            //   <Text color="black" fw={500} fz={"lg"}>
-            //     Date: {invoice?.date}
-            //   </Text>
-            // </Flex>
-            `
+          invoice_print["menuData"] = `
             <div style="font-size: 16px;">
-              <b>Party: ${partyData?.find(e => e.id === invoice?.reciever)?.name}</b> <br>
+              <b>Party: ${invoice?.reciever_name}</b> <br>
               <b>Date: ${invoice?.date}</b>
             </div>`;
 
           let body = [];
           items.map((e, i) => {
-            // console.log(itemData, e.item);
-            let item = itemData.find(v => v.id === e.item);
-            // console.log(item?.name);
             let row = [];
-            row.push(partyData?.find(v => v.id === e?.supplier)?.name);
+            row.push(e?.supplier_name);
             row.push(e.rate);
-            row.push(item?.name);
+            row.push(e.item_name);
             row.push(e.qty);
             if (isShowAmount) {
               row.push(e.amount);
@@ -596,7 +437,6 @@ const Billing = () => {
         );
       });
       if (tableData.length - 1 === i) {
-        // console.log(element_print);
         let orders_element = `<div>
         ${getMerged(element_print.map((e, i) => `${e}`))}
       </div>`;

@@ -428,11 +428,15 @@ const SetBilling = props => {
           enableColumnActions={false}
           enablePagination={false}
           enableBottomToolbar={false}
-          enableTopToolbar={false}
+          // enableTopToolbar={false}
           // enableStickyFooter
-          // enableStickyHeader
+
+          enableStickyHeader
           mantineTableContainerProps={{
-            sx: {},
+            sx: {
+              maxHeight: "55vh",
+              marginBottom: "50px",
+            },
           }}
           mantineTableBodyProps={{
             sx: {

@@ -165,6 +165,63 @@ const Order = () => {
     }
   }, [isAllPrint]);
 
+  const printRow = async (cell, isShowAmount) => {
+    console.log(cell.row.original?.id);
+
+    await api_order_by_id(cell.row.original?.id)
+      .then(res => {
+        if (res.success) {
+          console.log(res);
+          let order = res.data;
+          let items = order?.order_items;
+
+          setMenuData(
+            `
+            <div style="font-size: 16px;">
+              <b>Party: ${order?.reciever_name}</b> <br>
+              <b>Date: ${order?.date}</b>
+            </div>`
+          );
+          console.log(isShowAmount);
+
+          let body = [];
+          items.map((e, i) => {
+            let row = [];
+            row.push(e.supplier_name);
+            row.push(e.item_name);
+            row.push(e.box);
+            row.push(e.pcs);
+            row.push(e.crate);
+            if (isShowAmount) {
+              row.push(e.amount);
+            }
+            body.push(row);
+          });
+
+          if (isShowAmount) {
+            setFoot([
+              "Total",
+              items.length + " items",
+              order?.box,
+              order?.pcs,
+              order?.crate,
+              order?.amount,
+            ]);
+            setHead(["Supplier", "Item", "Box", "Pcs", "crate", "Amount"]);
+          } else {
+            setFoot(["Total", items.length + " items", order?.box, order?.pcs, order?.crate]);
+            setHead(["Supplier", "Item", "Box", "Pcs", "crate"]);
+          }
+          setPrintBodyData(body);
+        } else {
+          showErrorToast({ title: "Error", message: res.message });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -211,94 +268,8 @@ const Order = () => {
               <Tooltip label="Print without amount">
                 <Box
                   style={{ cursor: "pointer" }}
-                  onClick={async () => {
-                    console.log(cell.row.original?.id);
-                    let itemData = [];
-                    let isShowAmount = false;
-
-                    await api_all_item()
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          itemData = res.data;
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
-
-                    await api_order_by_id(cell.row.original?.id)
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          let order = res.data;
-                          let items = order?.order_items;
-
-                          setMenuData(
-                            // <Flex direction={"column"} gap={5}>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Party: {order?.reciever_name}
-                            //   </Text>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Date: {order?.date}
-                            //   </Text>
-                            // </Flex>
-
-                            `
-                            <div style="font-size: 16px;">
-                              <b>Party: ${order?.reciever_name}</b> <br>
-                              <b>Date: ${order?.date}</b>
-                            </div>`
-                          );
-                          console.log(isShowAmount);
-
-                          let body = [];
-                          items.map((e, i) => {
-                            // console.log(itemData, e.item);
-                            let item = itemData.find(v => v.id === e.item);
-                            // console.log(item?.name);
-                            let row = [];
-                            row.push(e.supplier_name);
-                            row.push(item?.name);
-                            row.push(e.box);
-                            row.push(e.pcs);
-                            row.push(e.crate);
-                            if (isShowAmount) {
-                              row.push(e.amount);
-                            }
-                            body.push(row);
-                          });
-
-                          if (isShowAmount) {
-                            setFoot([
-                              "Total",
-                              items.length + " items",
-                              order?.box,
-                              order?.pcs,
-                              order?.crate,
-                              order?.amount,
-                            ]);
-                            setHead(["Supplier", "Item", "Box", "Pcs", "crate", "Amount"]);
-                          } else {
-                            setFoot([
-                              "Total",
-                              items.length + " items",
-                              order?.box,
-                              order?.pcs,
-                              order?.crate,
-                            ]);
-                            setHead(["Supplier", "Item", "Box", "Pcs", "crate"]);
-                          }
-                          setPrintBodyData(body);
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
+                  onClick={() => {
+                    printRow(cell, false);
                   }}
                 >
                   <IconPrinter color={"black"} />
@@ -307,93 +278,8 @@ const Order = () => {
               <Tooltip label="Print with amount">
                 <Box
                   style={{ cursor: "pointer" }}
-                  onClick={async () => {
-                    console.log(cell.row.original?.id);
-                    let itemData = [];
-                    let isShowAmount = true;
-
-                    await api_all_item()
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          itemData = res.data;
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
-
-                    await api_order_by_id(cell.row.original?.id)
-                      .then(res => {
-                        if (res.success) {
-                          console.log(res);
-                          let order = res.data;
-                          let items = order?.order_items;
-
-                          setMenuData(
-                            // <Flex direction={"column"} gap={5}>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Party: {order?.reciever_name}
-                            //   </Text>
-                            //   <Text color="black" fw={500} fz={"lg"}>
-                            //     Date: {order?.date}
-                            //   </Text>
-                            // </Flex>
-                            `
-                            <div style="font-size: 16px;">
-                              <b>Party: ${order?.reciever_name}</b> <br>
-                              <b>Date: ${order?.date}</b>
-                            </div>`
-                          );
-                          console.log(isShowAmount);
-
-                          let body = [];
-                          items.map((e, i) => {
-                            // console.log(itemData, e.item);
-                            let item = itemData.find(v => v.id === e.item);
-                            // console.log(item?.name);
-                            let row = [];
-                            row.push(e.supplier_name);
-                            row.push(item?.name);
-                            row.push(e.box);
-                            row.push(e.pcs);
-                            row.push(e.crate);
-                            if (isShowAmount) {
-                              row.push(e.amount);
-                            }
-                            body.push(row);
-                          });
-
-                          if (isShowAmount) {
-                            setFoot([
-                              "Total",
-                              items.length + " items",
-                              order?.box,
-                              order?.pcs,
-                              order?.crate,
-                              order?.amount,
-                            ]);
-                            setHead(["Supplier", "Item", "Box", "Pcs", "crate", "Amount"]);
-                          } else {
-                            setFoot([
-                              "Total",
-                              items.length + " items",
-                              order?.box,
-                              order?.pcs,
-                              order?.crate,
-                            ]);
-                            setHead(["Supplier", "Item", "Box", "Pcs", "crate"]);
-                          }
-                          setPrintBodyData(body);
-                        } else {
-                          showErrorToast({ title: "Error", message: res.message });
-                        }
-                      })
-                      .catch(err => {
-                        console.log(err);
-                      });
+                  onClick={() => {
+                    printRow(cell, true);
                   }}
                 >
                   <IconPrinter color={theme.colors.brand[7]} />
@@ -489,11 +375,11 @@ const Order = () => {
           let body = [];
           items.map((e, i) => {
             // console.log(itemData, e.item);
-            let item = itemData.find(v => v.id === e.item);
+            // let item = itemData.find(v => v.id === e.item);
             // console.log(item?.name);
             let row = [];
             row.push(e.supplier_name);
-            row.push(item?.name);
+            row.push(e.item_name);
             row.push(e.box);
             row.push(e.pcs);
             row.push(e.crate);
