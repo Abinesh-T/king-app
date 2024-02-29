@@ -311,7 +311,7 @@ const Order = () => {
     console.log(cell.row.original?.id);
     checkPlatform()
       .then(platform => {
-        printReceipt(cell.row.original, false);
+        printReceipt(cell.row.original, isShowAmount);
         return;
       })
       .catch(error => {
