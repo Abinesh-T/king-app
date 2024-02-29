@@ -95,6 +95,11 @@ const SetOrder = props => {
     },
   });
 
+  const partyRef = useRef([]);
+  const boxRef = useRef([]);
+  const pcsRef = useRef([]);
+  const crateRef = useRef([]);
+
   const columns = useMemo(
     () => [
       {
@@ -105,6 +110,7 @@ const SetOrder = props => {
           return (
             <div>
               <Select
+                ref={e => partyRef.current.push(e)}
                 searchable
                 //dropdownPosition="bottom"
                 value={cell.row.original[cell.column.id]}
@@ -112,6 +118,11 @@ const SetOrder = props => {
                   cell.row._valuesCache[cell.column.id] = e;
                   cell.row.original[cell.column.id] = e;
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    boxRef?.current[cell.row.index]?.focus();
+                  }
                 }}
                 placeholder="Select Party"
                 data={props.partyData.filter((e, i) => e.type === "supplier")}
@@ -140,6 +151,7 @@ const SetOrder = props => {
           return (
             <div>
               <NumberInput
+                ref={e => boxRef.current.push(e)}
                 miw={"40px"}
                 value={cell.row.original[cell.column.id]}
                 onChange={e => {
@@ -150,6 +162,11 @@ const SetOrder = props => {
                     rate.pcs_rate *
                       (isNaN(cell.row.original["pcs"]) ? 0 : cell.row.original["pcs"]);
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    pcsRef?.current[cell.row.index]?.focus();
+                  }
                 }}
                 min={0}
                 hideControls
@@ -182,6 +199,7 @@ const SetOrder = props => {
           return (
             <div>
               <NumberInput
+                ref={e => pcsRef.current.push(e)}
                 miw={"40px"}
                 value={cell.row.original[cell.column.id]}
                 onChange={e => {
@@ -192,6 +210,11 @@ const SetOrder = props => {
                       (isNaN(cell.row.original["box"]) ? 0 : cell.row.original["box"]) +
                     rate.pcs_rate * e;
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    crateRef?.current[cell.row.index]?.focus();
+                  }
                 }}
                 hideControls
                 min={0}
@@ -224,6 +247,7 @@ const SetOrder = props => {
           return (
             <div>
               <NumberInput
+                ref={e => crateRef.current.push(e)}
                 miw={"40px"}
                 value={cell.row.original[cell.column.id]}
                 onChange={e => {
@@ -236,6 +260,11 @@ const SetOrder = props => {
                     rate.pcs_rate *
                       (isNaN(cell.row.original["pcs"]) ? 0 : cell.row.original["pcs"]);
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    partyRef?.current[cell.row.index + 1]?.focus();
+                  }
                 }}
                 hideControls
                 min={0}

@@ -61,6 +61,10 @@ const SetBilling = props => {
     total: 0.0,
   });
 
+  const partyRef = useRef([]);
+  const rateRef = useRef([]);
+  const qtyRef = useRef([]);
+
   const fetch_item = useQuery("fetch_item", api_all_item, {
     refetchOnWindowFocus: false,
     onSuccess: res => {
@@ -116,6 +120,7 @@ const SetBilling = props => {
           return (
             <div>
               <Select
+                ref={e => partyRef.current.push(e)}
                 searchable
                 dropdownPosition="bottom"
                 value={cell.row.original[cell.column.id]}
@@ -123,6 +128,11 @@ const SetBilling = props => {
                   cell.row._valuesCache[cell.column.id] = e;
                   cell.row.original[cell.column.id] = e;
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    rateRef?.current[cell.row.index]?.focus();
+                  }
                 }}
                 placeholder="Select Party"
                 data={props.partyData.filter((e, i) => e.type === "supplier")}
@@ -151,6 +161,7 @@ const SetBilling = props => {
           return (
             <div>
               <NumberInput
+                ref={e => rateRef.current.push(e)}
                 miw={"40px"}
                 value={cell.row.original[cell.column.id]}
                 onChange={e => {
@@ -159,6 +170,11 @@ const SetBilling = props => {
                   cell.row.original["amount"] =
                     e * (isNaN(cell.row.original["qty"]) ? 0 : cell.row.original["qty"]);
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    qtyRef?.current[cell.row.index]?.focus();
+                  }
                 }}
                 min={0}
                 hideControls
@@ -191,6 +207,7 @@ const SetBilling = props => {
           return (
             <div>
               <NumberInput
+                ref={e => qtyRef.current.push(e)}
                 miw={"40px"}
                 value={cell.row.original[cell.column.id]}
                 onChange={e => {
@@ -199,6 +216,11 @@ const SetBilling = props => {
                   cell.row.original["amount"] =
                     e * (isNaN(cell.row.original["rate"]) ? 0 : cell.row.original["rate"]);
                   setRender(e => !e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    partyRef?.current[cell.row.index + 1]?.focus();
+                  }
                 }}
                 min={0}
                 hideControls
