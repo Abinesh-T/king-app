@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Grid, Modal, Radio, Text, useMantineTheme } from "@mantine/core";
 import { IconPrinter } from "@tabler/icons";
 import React, { useEffect, useState } from "react";
+import { connectToDevice, listDevices, printDevice } from "services/bluetoothFunction";
 
 const Printer = () => {
   const theme = useMantineTheme();
@@ -10,10 +11,22 @@ const Printer = () => {
   const [printer, setPrinter] = useState("None");
 
   useEffect(() => {
-    setPrinterList(["Printer1", "Printer2", "Printer3"]);
+    listDevices()
+      .then(result => {
+        setPrinterList(result);
+        console.log(result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
 
-    setPrinter(localStorage.getItem("printer"));
-    setPrinterSelected(localStorage.getItem("printer"));
+    let selectedDevice = JSON.parse(localStorage.getItem("printer"));
+    console.log(!selectedDevice);
+    if (selectedDevice) {
+      console.log(selectedDevice.name);
+      setPrinter(selectedDevice);
+      setPrinterSelected(selectedDevice);
+    }
   }, []);
 
   return (
@@ -24,7 +37,7 @@ const Printer = () => {
             <Grid.Col>
               <Flex align={"center"} gap={"lg"}>
                 <IconPrinter color={theme.colors.brand[8]} />
-                <Text fw={"bold"}>{printerSelected}</Text>
+                <Text fw={"bold"}>{printerSelected?.name}</Text>
               </Flex>
             </Grid.Col>
             <Grid.Col>
@@ -53,7 +66,7 @@ const Printer = () => {
             <Radio
               key={index}
               fw={"bold"}
-              label={e}
+              label={e.name}
               variant="outline"
               checked={printer === e}
               onChange={event => setPrinter(event.currentTarget.checked ? e : "None")}
@@ -61,7 +74,7 @@ const Printer = () => {
           ))}
           <Button
             onClick={() => {
-              localStorage.setItem("printer", printer);
+              localStorage.setItem("printer", JSON.stringify(printer));
               setPrinterSelected(printer);
               setModalOpened(false);
             }}

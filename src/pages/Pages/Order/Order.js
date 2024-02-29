@@ -24,11 +24,13 @@ import {
 import AppHeader from "components/AppHeader";
 import FloatingMenu from "components/FloatingMenu";
 import { PrintModalHtml, PrintModalTable, getMerged } from "components/PrintModalHtml";
+import EscPosEncoder from "esc-pos-encoder";
 import { MantineReactTable } from "mantine-react-table";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useReactToPrint } from "react-to-print";
-import { getAlteredSelectionParty, getUserDetails } from "services/helperFunctions";
+import { printDevice } from "services/bluetoothFunction";
+import { checkPlatform, getAlteredSelectionParty, getUserDetails } from "services/helperFunctions";
 import { showErrorToast, showSuccessToast } from "utilities/Toast";
 
 import SetOrder from "./SetOrder";
@@ -62,6 +64,7 @@ const Order = () => {
   const [partyData, setPartyData] = useState([]);
   const [partySender, setPartySender] = useState(null);
   const [itemData, setItemData] = useState([]);
+  const [sender, setSenderData] = useState([]);
 
   const fetch_item = useQuery("fetch_item", api_all_item, {
     refetchOnWindowFocus: false,
@@ -74,6 +77,7 @@ const Order = () => {
     refetchOnWindowFocus: false,
     onSuccess: res => {
       setPartyData(getAlteredSelectionParty(res.data));
+      setSenderData(res.data.find((e, i) => e.party_type === "sender")?.name);
       const user = getUserDetails();
       setPartySender(
         // <>
@@ -165,8 +169,154 @@ const Order = () => {
     }
   }, [isAllPrint]);
 
+  const printReceipt = async (order, isShowAmount) => {
+    await api_order_by_id(order.id)
+      .then(res => {
+        if (res.success) {
+          console.log(res);
+          let order = res.data;
+          let items = order?.order_items;
+          const user = getUserDetails();
+          const divider = "*".repeat(48);
+          const encoder = new EscPosEncoder();
+          encoder.initialize();
+
+          encoder
+            .align("center")
+            .bold(true)
+            .text(sender)
+            .newline()
+            .bold(true)
+            .text(user.company_name)
+            .newline()
+            .text(user.address)
+            .newline()
+            .text("Phone No:-" + user.contact_no_left + "," + user.contact_no_right)
+            .newline()
+            .text("Vehicle No:" + user?.vehicle_no)
+            .newline()
+            .text("Driver Name:" + user?.driver_name)
+            .newline()
+            .align("center")
+            .text(divider)
+            .newline()
+            .newline()
+            .align("left")
+            .text("Party:" + order?.reciever_name)
+            .newline()
+            .align("left")
+            .text("Date:" + order?.date)
+            .newline()
+            .align("center")
+            .text(divider)
+            .newline();
+          let footer, header, items_, table_alignment;
+          if (isShowAmount) {
+            table_alignment = [
+              { width: 5, marginRight: 2, align: "left" },
+              { width: 10, align: "right" },
+              { width: 6, align: "right" },
+              { width: 6, align: "right" },
+              { width: 6, align: "right" },
+              { width: 8, align: "right" },
+            ];
+            header = [
+              ["Supplier", "Item", "Box", "Pcs", "Crt", "Amount"],
+              [" ", " ", " ", " ", " ", " "],
+            ];
+            items_ = items.map((e, i) => {
+              let row = [];
+              row.push(e.supplier_name);
+              row.push(e.item_name);
+              row.push(e.box.toString());
+              row.push(e.pcs.toString());
+              row.push(e.crate.toString());
+              row.push(e.amount.toString());
+              return row;
+            });
+            footer = [
+              [" ", " ", " ", " ", " ", " "],
+              [
+                "Total",
+                items.length + " items",
+                order?.box.toString(),
+                order?.pcs.toString(),
+                order?.crate.toString(),
+                order?.amount.toString(),
+              ],
+            ];
+          } else {
+            table_alignment = [
+              { width: 6, marginRight: 2, align: "left" },
+              { width: 12, align: "right" },
+              { width: 6, align: "right" },
+              { width: 6, align: "right" },
+              { width: 6, align: "right" },
+            ];
+            header = [
+              ["Supplier", "Item", "Box", "Pcs", "Crt"],
+              [" ", " ", " ", " ", " "],
+            ];
+            items_ = items.map((e, i) => {
+              let row = [];
+              row.push(e.supplier_name);
+              row.push(e.item_name);
+              row.push(e.box.toString());
+              row.push(e.pcs.toString());
+              row.push(e.crate.toString());
+              return row;
+            });
+            footer = [
+              [" ", " ", " ", " ", " "],
+              [
+                "Total",
+                items.length + " items",
+                order?.box.toString(),
+                order?.pcs.toString(),
+                order?.crate.toString(),
+              ],
+            ];
+          }
+          let row_content = [...header, ...items_, ...footer];
+
+          encoder.table(table_alignment, row_content);
+          encoder.align("center").text(divider).newline();
+
+          encoder
+            .align("center") // Center the following text
+            .text("Thank You for Your Order!") // Your Thank You message
+            .newline() // Your Thank You message
+            .text(" ")
+            .newline()
+            .text(" ")
+            .newline()
+            .text(" ")
+            .newline();
+
+          encoder.newline().cut("full");
+
+          const commands = encoder.encode();
+          printDevice(commands);
+          return;
+        } else {
+          showErrorToast({ title: "Error", message: res.message });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   const printRow = async (cell, isShowAmount) => {
     console.log(cell.row.original?.id);
+    checkPlatform()
+      .then(platform => {
+        printReceipt(cell.row.original, false);
+        return;
+      })
+      .catch(error => {
+        console.error(error);
+      });
 
     await api_order_by_id(cell.row.original?.id)
       .then(res => {
