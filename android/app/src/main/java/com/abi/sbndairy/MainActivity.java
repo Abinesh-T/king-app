@@ -1,4 +1,4 @@
-package com.kingwizard.kingVeg;
+package com.abi.sbndairy;
 
 import com.getcapacitor.BridgeActivity;
 

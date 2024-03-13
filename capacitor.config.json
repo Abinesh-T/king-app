@@ -1,12 +1,12 @@
 {
-  "appId": "com.kingwizard.kingVeg",
+  "appId": "com.abi.sbndairy",
   "appName": "kingVeg",
   "bundledWebRuntime": false,
   "npmClient": "yarn",
   "webDir": "build",
   "plugins": {
-    "cordova-plugin-android-permissions":"1.1.5",
-    "cordova-plugin-bluetooth-serial":"0.4.7"
+    "cordova-plugin-android-permissions": "1.1.5",
+    "cordova-plugin-bluetooth-serial": "0.4.7"
   },
   "cordova": {},
   "android": {
@@ -18,7 +18,10 @@
       "ACCESS_FINE_LOCATION",
       "BLUETOOTH",
       "BLUETOOTH_ADMIN",
-      "BLUETOOTH_CONNECT" 
+      "BLUETOOTH_CONNECT"
     ]
+  },
+  "server": {
+    "androidScheme": "https"
   }
 }
