@@ -141,7 +141,7 @@ const Order = () => {
           foot: foot,
         })
       );
-      printWindow.document.close();
+      // printWindow.document.close();
 
       printWindow.print();
       printWindow.close();
