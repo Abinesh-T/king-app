@@ -155,15 +155,13 @@ export const PrintModalHtml = props => {
             @media print {
                 body {
                     width: 104mm !important;
-                    height: 3276mm !important;
-                    margin: 0.2mm 0.2mm 0.2mm 0.2mm !important;
+                    margin: 0.4mm 0.4mm 0.4mm 0.4mm !important;
                     /* change the margins as you want them to be. */
                 }
             }
             @page {
             width: 104mm !important;
-            height: 3276mm !important;
-            margin: 0.2mm 0.2mm 0.2mm 0.2mm !important;
+            margin: 0.4mm 0.4mm 0.4mm 0.4mm !important;
             /* change the margins as you want them to be. */
         }
         p{
