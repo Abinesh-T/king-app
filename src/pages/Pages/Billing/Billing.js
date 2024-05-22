@@ -93,7 +93,7 @@ const Billing = () => {
           foots: foots,
         })
       );
-      // printWindow.document.close();
+      printWindow.document.close();
 
       printWindow.print();
       printWindow.close();

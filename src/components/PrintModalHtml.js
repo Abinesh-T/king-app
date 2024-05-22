@@ -154,16 +154,16 @@ export const PrintModalHtml = props => {
         <style>
             @media print {
                 body {
-                    width: 72mm !important;
-                    height: 3276mm !important;
-                    margin: 0.2mm 0.2mm 0.2mm 0.2mm !important;
+                    width: 100mm !important;
+                    height: 220mm !important;
+                    margin: 0.4mm 0.4mm 0.4mm 0.4mm !important;
                     /* change the margins as you want them to be. */
                 }
             }
             @page {
-            width: 72mm !important;
-            height: 3276mm !important;
-            margin: 0.2mm 0.2mm 0.2mm 0.2mm !important;
+            width: 100mm !important;
+            height: 220mm !important;
+            margin: 0.4mm 0.4mm 0.4mm 0.4mm !important;
             /* change the margins as you want them to be. */
         }
         p{
@@ -185,6 +185,8 @@ export const PrintModalHtml = props => {
             : `<div></div>`
         }
         ${props.children}
+        <div class="table-container">
+        <div class="table-content">
         <table style="display: flex;font-size: 18px;margin: 2px;border-collapse: collapse;margin-top: 10px;border: 1px solid black;flex-direction: column;">
           <thead style="background: white;">
             <tr style="
@@ -206,6 +208,9 @@ export const PrintModalHtml = props => {
             </tr>
           </thead>
           <tbody style="font-weight: bold;">${getMerged(rows)}</tbody>
+          </table>
+          </div>
+          <table style="width:100%;position:absolute;bottom:16px;">
           <tfoot style="font-weight: bold;">
             ${foot_multiple_rows ? getMerged(foot_multiple_rows) : ""}
             <tr style="
@@ -217,6 +222,8 @@ export const PrintModalHtml = props => {
         ">${getMerged(foot_rows)}</tr>
           </tfoot>
         </table>
+      </div>
+      </div>
       </div>
     </div>
   </body>

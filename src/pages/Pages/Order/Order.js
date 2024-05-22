@@ -141,7 +141,11 @@ const Order = () => {
           foot: foot,
         })
       );
+<<<<<<< HEAD
       // printWindow.document.close();
+=======
+      printWindow.document.close();
+>>>>>>> b1206113bb3bf621e073725befbfe0443b4cec83
 
       printWindow.print();
       printWindow.close();
@@ -169,6 +173,7 @@ const Order = () => {
     }
   }, [isAllPrint]);
 
+<<<<<<< HEAD
   const printReceipt = async (order, isShowAmount) => {
     await api_order_by_id(order.id)
       .then(res => {
@@ -317,6 +322,10 @@ const Order = () => {
       .catch(error => {
         console.error(error);
       });
+=======
+  const printRow = async (cell, isShowAmount) => {
+    console.log(cell.row.original?.id);
+>>>>>>> b1206113bb3bf621e073725befbfe0443b4cec83
 
     await api_order_by_id(cell.row.original?.id)
       .then(res => {
