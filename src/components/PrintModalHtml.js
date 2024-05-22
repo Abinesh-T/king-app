@@ -154,15 +154,15 @@ export const PrintModalHtml = props => {
         <style>
             @media print {
                 body {
-                    width: 39mm !important;
-                    height: 83mm !important;
+                    width: 100mm !important;
+                    height: 220mm !important;
                     margin: 0.4mm 0.4mm 0.4mm 0.4mm !important;
                     /* change the margins as you want them to be. */
                 }
             }
             @page {
-            width: 39mm !important;
-            height: 83mm !important;
+            width: 100mm !important;
+            height: 220mm !important;
             margin: 0.4mm 0.4mm 0.4mm 0.4mm !important;
             /* change the margins as you want them to be. */
         }
@@ -210,7 +210,7 @@ export const PrintModalHtml = props => {
           <tbody style="font-weight: bold;">${getMerged(rows)}</tbody>
           </table>
           </div>
-          <table>
+          <table style="width:100%;position:absolute;bottom:16px;">
           <tfoot style="font-weight: bold;">
             ${foot_multiple_rows ? getMerged(foot_multiple_rows) : ""}
             <tr style="
