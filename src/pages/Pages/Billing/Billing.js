@@ -126,33 +126,33 @@ const Billing = () => {
     refetchOnWindowFocus: false,
     onSuccess: res => {
       setPartyData(getAlteredSelectionParty(res.data));
-      const user = getUserDetails();
-      setPartySender(
-        // <>
-        //   <Flex align={"center"} justify={"center"} gap={5}>
-        //     <Text>{user.company_name}</Text>
-        //     <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
-        //   </Flex>
-        //   <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
-        //     <Text>{user.address}</Text>
-        //     <Text>
-        //       Phone: {user.contact_no_left}, {user.contact_no_right}
-        //     </Text>
-        //     <Text>Vehicle No: TNxxYxxxx</Text>
-        //     <Text>Driver Name: Name</Text>
-        //   </Flex>
-        // </>
-        `<div style="text-align: center;">
-          <p style="font-size: 22px">${user.company_name}</p>
-          <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
-        </div>
-        <div style="text-align: center;">
-          <p>${user.address}</p>
-          <p>Phone: ${user.contact_no_left}, ${user.contact_no_right}</p>
-          <p>Vehicle No: ${user?.vehicle_no}</p>
-          <p>Driver Name: ${user?.driver_name}</p>
-        </div>`
-      );
+      // const user = getUserDetails();
+      // setPartySender(
+      //   // <>
+      //   //   <Flex align={"center"} justify={"center"} gap={5}>
+      //   //     <Text>{user.company_name}</Text>
+      //   //     <Text>{res.data.find((e, i) => e.party_type === "sender")?.name}</Text>
+      //   //   </Flex>
+      //   //   <Flex align={"center"} justify={"center"} direction={"column"} gap={5}>
+      //   //     <Text>{user.address}</Text>
+      //   //     <Text>
+      //   //       Phone: {user.contact_no_left}, {user.contact_no_right}
+      //   //     </Text>
+      //   //     <Text>Vehicle No: TNxxYxxxx</Text>
+      //   //     <Text>Driver Name: Name</Text>
+      //   //   </Flex>
+      //   // </>
+      //   `<div style="text-align: center;">
+      //     <p style="font-size: 22px">${user.company_name}</p>
+      //     <p>${res.data.find((e, i) => e.party_type === "sender")?.name}</p>
+      //   </div>
+      //   <div style="text-align: center;">
+      //     <p>${user.address}</p>
+      //     <p>Phone: ${user.contact_no_left}, ${user.contact_no_right}</p>
+      //     <p>Vehicle No: ${user?.vehicle_no}</p>
+      //     <p>Driver Name: ${user?.driver_name}</p>
+      //   </div>`
+      // );
     },
   });
 
@@ -180,7 +180,19 @@ const Billing = () => {
           console.log(res);
           let invoice = res.data;
           let items = invoice?.invoice_items;
-
+          const user = getUserDetails();
+          setPartySender(`
+          <div style="text-align: center;">
+            <p style="font-size: 22px">${user.company_name}</p>
+            <p style="font-size: 22px">${invoice?.sender_name}</p>
+          </div>
+          <div style="text-align: center;">
+              <p>${user.address}</p>
+              <p>Phone: ${user.contact_no_left}, ${user.contact_no_right}</p>
+              <p>Vehicle No: ${user?.vehicle_no}</p>
+              <p>Driver Name: ${user?.driver_name}</p>
+          </div>`
+          );
           setMenuData(
             `
             <div style="font-size: 16px;">

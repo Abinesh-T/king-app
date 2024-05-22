@@ -46,6 +46,7 @@ const SetBilling = props => {
   const [billingData, setBillingData] = useState([]);
   const [errorParty, setErrorParty] = useState(null);
   const [toParty, setToParty] = useState(null);
+  const [fromParty, setFromParty] = useState(null);
   const [footer, setFooter] = useState(["", "Total", "", "", "", ""]);
   const [date, setDate] = useState(new Date());
   const [itemData, setItemData] = useState([]);
@@ -336,6 +337,7 @@ const SetBilling = props => {
     const payload = {
       invoice: {
         reciever_id: toParty,
+        sender_id: fromParty,
         date: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
         rate: footer[3],
         qty: footer[4],
@@ -399,6 +401,15 @@ const SetBilling = props => {
               searchable
               error={errorParty}
               data={props.partyData.filter((e, i) => e.type === "receiver")}
+            />
+              <Select
+              value={fromParty}
+              onChange={setFromParty}
+              label="Sender Party"
+              placeholder="Select To Sender Party"
+              searchable
+              error={errorParty}
+              data={props.partyData.filter((e, i) => e.type === "sender")}
             />
             <DatePickerInput miw={110} label="Select Date" value={date} onChange={setDate} />
           </Grid.Col>
