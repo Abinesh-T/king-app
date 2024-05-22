@@ -47,7 +47,7 @@ export const PrintModalTable = props => {
           (h, index) =>
             `<td style="width: ${
               props.head?.findIndex(v => v === "Item") === index ? "100" : index === 0 ? "43" : "32"
-            }%;text-align: start;color: black;" >
+            }%;text-align: right;color: black;" >
           ${h}
         </td>`
         )

@@ -183,6 +183,7 @@ const Billing = () => {
           const user = getUserDetails();
           setPartySender(`
           <div style="text-align: center;">
+            <p style="font-size: 22px">${user.company_name}</p>
             <p style="font-size: 22px">${invoice?.sender_name}</p>
           </div>
           <div style="text-align: center;">
